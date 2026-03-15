@@ -1,0 +1,7 @@
+package com.example.wastemanagement.exception;
+
+public class NotFoundException extends RuntimeException {
+    public NotFoundException(String message) {
+        super(message);
+    }
+}
