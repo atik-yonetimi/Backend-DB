@@ -4,19 +4,15 @@ import java.time.OffsetDateTime;
 
 public class StopResponse {
 
-    private String id;
+    private Long id;
     private int sequenceNo;
     private String status;
     private ContainerSummaryResponse container;
-    private OffsetDateTime arrivalAt;
-    private OffsetDateTime completedAt;
-    private OffsetDateTime skippedAt;
-    private String skipReason;
 
     public StopResponse() {
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -32,23 +28,8 @@ public class StopResponse {
         return container;
     }
 
-    public OffsetDateTime getArrivalAt() {
-        return arrivalAt;
-    }
 
-    public OffsetDateTime getCompletedAt() {
-        return completedAt;
-    }
-
-    public OffsetDateTime getSkippedAt() {
-        return skippedAt;
-    }
-
-    public String getSkipReason() {
-        return skipReason;
-    }
-
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -64,19 +45,4 @@ public class StopResponse {
         this.container = container;
     }
 
-    public void setArrivalAt(OffsetDateTime arrivalAt) {
-        this.arrivalAt = arrivalAt;
-    }
-
-    public void setCompletedAt(OffsetDateTime completedAt) {
-        this.completedAt = completedAt;
-    }
-
-    public void setSkippedAt(OffsetDateTime skippedAt) {
-        this.skippedAt = skippedAt;
-    }
-
-    public void setSkipReason(String skipReason) {
-        this.skipReason = skipReason;
-    }
 }

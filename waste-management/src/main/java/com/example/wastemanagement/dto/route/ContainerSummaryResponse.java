@@ -2,8 +2,7 @@ package com.example.wastemanagement.dto.route;
 
 public class ContainerSummaryResponse {
 
-    private String id;
-    private String containerCode;
+    private Long id;
     private String wasteType;
     private double lat;
     private double lng;
@@ -11,20 +10,12 @@ public class ContainerSummaryResponse {
     public ContainerSummaryResponse() {
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getContainerCode() {
-        return containerCode;
-    }
-
-    public void setContainerCode(String containerCode) {
-        this.containerCode = containerCode;
     }
 
     public String getWasteType() {

@@ -1,38 +1,42 @@
 package com.example.wastemanagement.entity;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 public class TelemetryRecord {
-    private String id;
-    private String containerId;
-    private int fillLevelPercent;
+    private Long id;
+    private Long containerId;
+    private BigDecimal fillPercent;
     private double lat;
     private double lng;
-    private OffsetDateTime recordedAt;
+    private OffsetDateTime sourceTimestamp;
+    private OffsetDateTime ingestedAt;
+    
 
     public TelemetryRecord() {
     }
 
-    public TelemetryRecord(String id, String containerId, int fillLevelPercent,
-                           double lat, double lng, OffsetDateTime recordedAt) {
+    public TelemetryRecord(Long id, Long containerId, BigDecimal fillPercent,
+                           double lat, double lng, OffsetDateTime sourceTimestamp, OffsetDateTime ingestedAt) {
         this.id = id;
         this.containerId = containerId;
-        this.fillLevelPercent = fillLevelPercent;
+        this.fillPercent = fillPercent;
         this.lat = lat;
         this.lng = lng;
-        this.recordedAt = recordedAt;
+        this.sourceTimestamp = sourceTimestamp;
+        this.ingestedAt= ingestedAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getContainerId() {
+    public Long getContainerId() {
         return containerId;
     }
 
-    public int getFillLevelPercent() {
-        return fillLevelPercent;
+    public BigDecimal getFillPercent() {
+        return fillPercent;
     }
 
     public double getLat() {
@@ -43,20 +47,24 @@ public class TelemetryRecord {
         return lng;
     }
 
-    public OffsetDateTime getRecordedAt() {
-        return recordedAt;
+    public OffsetDateTime getSourceTimestamp() {
+        return sourceTimestamp;
+    }
+    
+    public OffsetDateTime getIngestedAt() {
+        return ingestedAt;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public void setContainerId(String containerId) {
+    public void setContainerId(Long containerId) {
         this.containerId = containerId;
     }
 
-    public void setFillLevelPercent(int fillLevelPercent) {
-        this.fillLevelPercent = fillLevelPercent;
+    public void setFillPercent(BigDecimal fillPercent) {
+        this.fillPercent = fillPercent;
     }
 
     public void setLat(double lat) {
@@ -67,7 +75,11 @@ public class TelemetryRecord {
         this.lng = lng;
     }
 
-    public void setRecordedAt(OffsetDateTime recordedAt) {
-        this.recordedAt = recordedAt;
+    public void setSourceTimestamp(OffsetDateTime sourceTimestamp) {
+        this.sourceTimestamp = sourceTimestamp;
+    }
+    
+    public void setIngestedAt(OffsetDateTime ingestedAt) {
+        this.ingestedAt = ingestedAt;
     }
 }

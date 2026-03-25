@@ -1,19 +1,20 @@
 package com.example.wastemanagement.service;
 
+import com.example.wastemanagement.repository.InMemoryStore;
 import com.example.wastemanagement.dto.collection.CollectionCreateRequest;
 import com.example.wastemanagement.dto.collection.CollectionResponse;
 import com.example.wastemanagement.entity.CollectionRecord;
 import com.example.wastemanagement.entity.Driver;
 import com.example.wastemanagement.entity.RoutePlan;
 import com.example.wastemanagement.entity.RouteStop;
+import com.example.wastemanagement.enums.CollectionResult;
 import com.example.wastemanagement.enums.RouteStatus;
 import com.example.wastemanagement.enums.StopStatus;
 import com.example.wastemanagement.exception.NotFoundException;
-import com.example.wastemanagement.repository.InMemoryStore;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Service
 public class CollectionService {
@@ -49,28 +50,36 @@ public class CollectionService {
             throw new IllegalStateException("Bu durak icin collection zaten var");
         }
 
+        Long collectionId = (long) (store.getCollections().size() + 1);
+        OffsetDateTime now = OffsetDateTime.now();
+
         CollectionRecord record = new CollectionRecord(
-                "col_" + UUID.randomUUID().toString().substring(0, 8),
+                collectionId,
                 stop.getId(),
-                stop.getContainerId(),
-                routePlan.getVehicleId(),
                 currentDriver.getId(),
-                request.getCollectedKg(),
-                OffsetDateTime.now(),
-                request.getNote()
+                routePlan.getVehicleId(),
+                CollectionResult.DONE,
+                BigDecimal.valueOf(request.getCollectedKg()),
+                null,
+                now,
+                null,
+                null,
+                null,
+                now
         );
 
         store.getCollections().put(record.getId(), record);
 
+        stop.setStatus(StopStatus.DONE);
+
         CollectionResponse response = new CollectionResponse();
         response.setId(record.getId());
         response.setRouteStopId(record.getRouteStopId());
-        response.setContainerId(record.getContainerId());
         response.setVehicleId(record.getVehicleId());
         response.setDriverId(record.getDriverId());
-        response.setCollectedKg(record.getCollectedKg());
+        response.setCollectedKg(record.getAmountKg().doubleValue());
         response.setCollectedAt(record.getCollectedAt());
-        response.setNote(record.getNote());
+        response.setNote(request.getNote());
 
         return response;
     }

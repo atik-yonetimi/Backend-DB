@@ -25,7 +25,7 @@ public class StopController {
     }
 
     @PatchMapping("/{stopId}/status")
-    public StopResponse updateStatus(@PathVariable String stopId,
+    public StopResponse updateStatus(@PathVariable Long stopId,
                                      @Valid @RequestBody StopStatusUpdateRequest request,
                                      @RequestHeader("Authorization") String authorizationHeader) {
         Driver driver = tokenService.getDriverFromAuthorizationHeader(authorizationHeader);

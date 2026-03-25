@@ -9,34 +9,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoutePlan {
-    private String id;
-    private String vehicleId;
+    private Long id;
+    private Long vehicleId;
     private WasteType wasteType;
     private RouteStatus status;
-    private int versionNo;
-    private OffsetDateTime generatedAt;
-    private TriggerMode generationMode;
-    private List<String> stopIds = new ArrayList<>();
+    private OffsetDateTime createdAt;
 
     public RoutePlan() {
     }
 
-    public RoutePlan(String id, String vehicleId, WasteType wasteType, RouteStatus status,
-                     int versionNo, OffsetDateTime generatedAt, TriggerMode generationMode) {
+    public RoutePlan(Long id, Long vehicleId, WasteType wasteType, RouteStatus status,
+                     OffsetDateTime createdAt ) {
         this.id = id;
         this.vehicleId = vehicleId;
         this.wasteType = wasteType;
         this.status = status;
-        this.versionNo = versionNo;
-        this.generatedAt = generatedAt;
-        this.generationMode = generationMode;
+        this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getVehicleId() {
+    public Long getVehicleId() {
         return vehicleId;
     }
 
@@ -48,27 +43,17 @@ public class RoutePlan {
         return status;
     }
 
-    public int getVersionNo() {
-        return versionNo;
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public OffsetDateTime getGeneratedAt() {
-        return generatedAt;
-    }
 
-    public TriggerMode getGenerationMode() {
-        return generationMode;
-    }
-
-    public List<String> getStopIds() {
-        return stopIds;
-    }
-
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public void setVehicleId(String vehicleId) {
+    public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
     }
 
@@ -80,19 +65,8 @@ public class RoutePlan {
         this.status = status;
     }
 
-    public void setVersionNo(int versionNo) {
-        this.versionNo = versionNo;
-    }
 
-    public void setGeneratedAt(OffsetDateTime generatedAt) {
-        this.generatedAt = generatedAt;
-    }
-
-    public void setGenerationMode(TriggerMode generationMode) {
-        this.generationMode = generationMode;
-    }
-
-    public void setStopIds(List<String> stopIds) {
-        this.stopIds = stopIds;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -4,8 +4,8 @@ public class LoginResponse {
 
     private String accessToken;
     private String tokenType;
-    private String driverId;
-    private String vehicleId;
+    private Long driverId;
+    private Long vehicleId;
     private String plate;
 
     public LoginResponse() {
@@ -27,19 +27,19 @@ public class LoginResponse {
         this.tokenType = tokenType;
     }
 
-    public String getDriverId() {
+    public Long getDriverId() {
         return driverId;
     }
 
-    public void setDriverId(String driverId) {
+    public void setDriverId(Long driverId) {
         this.driverId = driverId;
     }
 
-    public String getVehicleId() {
+    public Long getVehicleId() {
         return vehicleId;
     }
 
-    public void setVehicleId(String vehicleId) {
+    public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
     }
 

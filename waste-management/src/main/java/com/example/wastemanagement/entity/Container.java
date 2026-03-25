@@ -2,71 +2,74 @@ package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.WasteType;
 
+import java.time.OffsetDateTime;
+
 public class Container {
-    private String id;
-    private String containerCode;
+
+    private Long id;
     private WasteType wasteType;
-    private double lat;
-    private double lng;
-    private boolean active;
+    private Double lat;
+    private Double lng;
+    private String status;
+    private OffsetDateTime createdAt;
 
     public Container() {
     }
 
-    public Container(String id, String containerCode, WasteType wasteType, double lat, double lng, boolean active) {
+    public Container(Long id, WasteType wasteType, Double lat, Double lng, String status, OffsetDateTime createdAt) {
         this.id = id;
-        this.containerCode = containerCode;
         this.wasteType = wasteType;
         this.lat = lat;
         this.lng = lng;
-        this.active = active;
+        this.status = status;
+        this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
-    }
-
-    public String getContainerCode() {
-        return containerCode;
     }
 
     public WasteType getWasteType() {
         return wasteType;
     }
 
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public double getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getStatus() {
+        return status;
     }
 
-    public void setId(String id) {
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setContainerCode(String containerCode) {
-        this.containerCode = containerCode;
     }
 
     public void setWasteType(WasteType wasteType) {
         this.wasteType = wasteType;
     }
 
-    public void setLat(double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public void setLng(double lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

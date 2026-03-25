@@ -1,28 +1,29 @@
 package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.WasteType;
+import java.time.OffsetDateTime;
 
 public class Vehicle {
-    private String id;
+    private Long id;
     private String plate;
     private WasteType wasteType;
     private double garageLat;
     private double garageLng;
-    private boolean active;
+    private OffsetDateTime createdAt;
 
     public Vehicle() {
     }
 
-    public Vehicle(String id, String plate, WasteType wasteType, double garageLat, double garageLng, boolean active) {
+    public Vehicle(Long id, String plate, WasteType wasteType, double garageLat, double garageLng, OffsetDateTime createdAt) {
         this.id = id;
         this.plate = plate;
         this.wasteType = wasteType;
         this.garageLat = garageLat;
         this.garageLng = garageLng;
-        this.active = active;
+        this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -42,11 +43,11 @@ public class Vehicle {
         return garageLng;
     }
 
-    public boolean isActive() {
-        return active;
+    public OffsetDateTime getcreatedAt() {
+        return createdAt;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -66,7 +67,7 @@ public class Vehicle {
         this.garageLng = garageLng;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setCreateAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
