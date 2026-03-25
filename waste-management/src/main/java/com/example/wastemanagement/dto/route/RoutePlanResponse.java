@@ -5,22 +5,21 @@ import java.util.List;
 
 public class RoutePlanResponse {
 
-    private String id;
-    private String vehicleId;
+    private Long id;
+    private Long vehicleId;
     private String wasteType;
     private String status;
-    private int versionNo;
     private OffsetDateTime generatedAt;
     private List<StopResponse> stops;
 
     public RoutePlanResponse() {
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getVehicleId() {
+    public Long getVehicleId() {
         return vehicleId;
     }
 
@@ -32,10 +31,6 @@ public class RoutePlanResponse {
         return status;
     }
 
-    public int getVersionNo() {
-        return versionNo;
-    }
-
     public OffsetDateTime getGeneratedAt() {
         return generatedAt;
     }
@@ -44,11 +39,11 @@ public class RoutePlanResponse {
         return stops;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public void setVehicleId(String vehicleId) {
+    public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
     }
 
@@ -60,9 +55,6 @@ public class RoutePlanResponse {
         this.status = status;
     }
 
-    public void setVersionNo(int versionNo) {
-        this.versionNo = versionNo;
-    }
 
     public void setGeneratedAt(OffsetDateTime generatedAt) {
         this.generatedAt = generatedAt;

@@ -33,7 +33,7 @@ public class RouteController {
     @GetMapping("/active")
     public RoutePlanResponse active(@RequestHeader("Authorization") String authorizationHeader) {
         Driver driver = tokenService.getDriverFromAuthorizationHeader(authorizationHeader);
-        RoutePlan routePlan = routeService.getActiveRouteForVehicle(driver.getVehicleId());
+        RoutePlan routePlan = routeService.getActiveRouteForVehicle((Long) driver.getAssignedVehicleId());
 
         if (routePlan == null) {
             throw new IllegalArgumentException("Aktif rota bulunamadi");

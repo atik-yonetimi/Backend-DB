@@ -16,7 +16,7 @@ public class TokenService {
         this.store = store;
     }
 
-    public String generateToken(String driverId) {
+    public String generateToken(Long driverId) {
         String token = "token-" + driverId + "-" + UUID.randomUUID().toString().substring(0, 8);
         store.getTokens().put(token, driverId);
         return token;
@@ -24,19 +24,19 @@ public class TokenService {
 
     public Driver getDriverFromAuthorizationHeader(String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Geçersiz veya eksik token");
+            throw new IllegalArgumentException("Gecersiz veya eksik token");
         }
 
         String token = authorizationHeader.substring(7);
-        String driverId = store.getTokens().get(token);
+        Long driverId = store.getTokens().get(token);
 
         if (driverId == null) {
-            throw new IllegalArgumentException("Token geçersiz");
+            throw new IllegalArgumentException("Token gecersiz");
         }
 
         Driver driver = store.getDrivers().get(driverId);
         if (driver == null) {
-            throw new NotFoundException("Sürücü bulunamadı");
+            throw new NotFoundException("Surucu bulunamadi");
         }
 
         return driver;

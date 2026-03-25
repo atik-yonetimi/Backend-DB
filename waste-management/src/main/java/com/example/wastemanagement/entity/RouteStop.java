@@ -5,37 +5,35 @@ import com.example.wastemanagement.enums.StopStatus;
 import java.time.OffsetDateTime;
 
 public class RouteStop {
-    private String id;
-    private String routePlanId;
-    private String containerId;
+    private Long id;
+    private Long routePlanId;
+    private Long containerId;
     private int sequenceNo;
     private StopStatus status;
-    private OffsetDateTime arrivalAt;
-    private OffsetDateTime completedAt;
-    private OffsetDateTime skippedAt;
-    private String skipReason;
+    private OffsetDateTime createdAt;
 
     public RouteStop() {
     }
 
-    public RouteStop(String id, String routePlanId, String containerId,
-                     int sequenceNo, StopStatus status) {
+    public RouteStop(Long id, Long routePlanId, Long containerId,
+                     int sequenceNo, StopStatus status,OffsetDateTime createdAt ) {
         this.id = id;
         this.routePlanId = routePlanId;
         this.containerId = containerId;
         this.sequenceNo = sequenceNo;
         this.status = status;
+        this.createdAt= createdAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getRoutePlanId() {
+    public Long getRoutePlanId() {
         return routePlanId;
     }
 
-    public String getContainerId() {
+    public Long getContainerId() {
         return containerId;
     }
 
@@ -47,31 +45,20 @@ public class RouteStop {
         return status;
     }
 
-    public OffsetDateTime getArrivalAt() {
-        return arrivalAt;
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public OffsetDateTime getCompletedAt() {
-        return completedAt;
-    }
 
-    public OffsetDateTime getSkippedAt() {
-        return skippedAt;
-    }
-
-    public String getSkipReason() {
-        return skipReason;
-    }
-
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public void setRoutePlanId(String routePlanId) {
+    public void setRoutePlanId(Long routePlanId) {
         this.routePlanId = routePlanId;
     }
 
-    public void setContainerId(String containerId) {
+    public void setContainerId(Long containerId) {
         this.containerId = containerId;
     }
 
@@ -83,19 +70,7 @@ public class RouteStop {
         this.status = status;
     }
 
-    public void setArrivalAt(OffsetDateTime arrivalAt) {
-        this.arrivalAt = arrivalAt;
-    }
-
-    public void setCompletedAt(OffsetDateTime completedAt) {
-        this.completedAt = completedAt;
-    }
-
-    public void setSkippedAt(OffsetDateTime skippedAt) {
-        this.skippedAt = skippedAt;
-    }
-
-    public void setSkipReason(String skipReason) {
-        this.skipReason = skipReason;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

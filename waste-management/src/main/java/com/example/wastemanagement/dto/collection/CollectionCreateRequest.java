@@ -1,12 +1,12 @@
 package com.example.wastemanagement.dto.collection;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public class CollectionCreateRequest {
 
-    @NotBlank
-    private String routeStopId;
+    @NotNull
+    private Long routeStopId;
 
     @Positive
     private double collectedKg;
@@ -16,11 +16,11 @@ public class CollectionCreateRequest {
     public CollectionCreateRequest() {
     }
 
-    public String getRouteStopId() {
+    public Long getRouteStopId() {
         return routeStopId;
     }
 
-    public void setRouteStopId(String routeStopId) {
+    public void setRouteStopId(Long routeStopId) {
         this.routeStopId = routeStopId;
     }
 

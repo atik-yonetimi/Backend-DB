@@ -1,5 +1,6 @@
 package com.example.wastemanagement.service;
 
+import com.example.wastemanagement.repository.InMemoryStore;
 import com.example.wastemanagement.config.AppConstants;
 import com.example.wastemanagement.entity.LatestState;
 import com.example.wastemanagement.entity.RoutePlan;
@@ -10,14 +11,13 @@ import com.example.wastemanagement.enums.StopStatus;
 import com.example.wastemanagement.enums.TriggerMode;
 import com.example.wastemanagement.enums.WasteType;
 import com.example.wastemanagement.exception.NotFoundException;
-import com.example.wastemanagement.repository.InMemoryStore;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,55 +43,49 @@ public class RouteService {
         List<LatestState> candidates = selectCandidates(wasteType);
         List<LatestState> ordered = nearestNeighborOrder(vehicle, candidates);
 
+        Long routePlanId = (long) (store.getRoutePlans().size() + 1);
+
         RoutePlan routePlan = new RoutePlan(
-                "route_" + UUID.randomUUID().toString().substring(0, 8),
+                routePlanId,
                 vehicle.getId(),
                 wasteType,
                 RouteStatus.ACTIVE,
-                nextVersion(vehicle.getId()),
-                OffsetDateTime.now(),
-                generationMode
+                OffsetDateTime.now()
         );
 
         store.getRoutePlans().put(routePlan.getId(), routePlan);
 
         int sequence = 1;
         for (LatestState state : ordered) {
+            Long stopId = (long) (store.getRouteStops().size() + 1);
+
             RouteStop stop = new RouteStop(
-                    "stop_" + UUID.randomUUID().toString().substring(0, 8),
+                    stopId,
                     routePlan.getId(),
                     state.getContainerId(),
                     sequence++,
-                    StopStatus.PENDING
+                    StopStatus.PENDING,
+                    OffsetDateTime.now()
             );
 
             store.getRouteStops().put(stop.getId(), stop);
-            routePlan.getStopIds().add(stop.getId());
         }
 
         return routePlan;
     }
 
-    public RoutePlan getActiveRouteForVehicle(String vehicleId) {
+    public RoutePlan getActiveRouteForVehicle(Long vehicleId) {
         return store.getRoutePlans().values().stream()
                 .filter(r -> r.getVehicleId().equals(vehicleId))
                 .filter(r -> r.getStatus() == RouteStatus.ACTIVE)
-                .max(Comparator.comparingInt(RoutePlan::getVersionNo))
+                .max(Comparator.comparing(RoutePlan::getCreatedAt))
                 .orElse(null);
-    }
-
-    private int nextVersion(String vehicleId) {
-        return store.getRoutePlans().values().stream()
-                .filter(r -> r.getVehicleId().equals(vehicleId))
-                .map(RoutePlan::getVersionNo)
-                .max(Integer::compareTo)
-                .orElse(0) + 1;
     }
 
     private List<LatestState> selectCandidates(WasteType wasteType) {
         return store.getLatestStates().values().stream()
                 .filter(s -> s.getWasteType() == wasteType)
-                .filter(s -> s.getFillLevelPercent() >= AppConstants.THRESHOLD_PERCENT)
+                .filter(s -> s.getFillPercent().compareTo(BigDecimal.valueOf(AppConstants.THRESHOLD_PERCENT)) >= 0)
                 .collect(Collectors.toList());
     }
 
@@ -120,7 +114,7 @@ public class RouteService {
         return ordered;
     }
 
-    private double distance(double aLat, double aLng, double bLat, double bLng) {
+    private double distance(Double aLat, Double aLng, Double bLat, Double bLng) {
         return Math.sqrt(Math.pow(aLat - bLat, 2) + Math.pow(aLng - bLng, 2));
     }
 }

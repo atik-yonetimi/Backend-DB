@@ -1,31 +1,35 @@
 package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.WasteType;
+import java.math.BigDecimal;
 
 import java.time.OffsetDateTime;
 
 public class LatestState {
-    private String containerId;
+    private Long containerId;
     private WasteType wasteType;
-    private int fillLevelPercent;
+    private BigDecimal fillPercent;
     private double lat;
     private double lng;
-    private OffsetDateTime lastTelemetryAt;
+    private OffsetDateTime sourceTimestamp;
+    private OffsetDateTime ingestedAt;
 
     public LatestState() {
     }
 
-    public LatestState(String containerId, WasteType wasteType, int fillLevelPercent,
-                       double lat, double lng, OffsetDateTime lastTelemetryAt) {
+    public LatestState(Long containerId, WasteType wasteType, BigDecimal fillPercent,
+                       double lat, double lng, OffsetDateTime sourceTimestamp, 
+                       OffsetDateTime ingestedAt) {
         this.containerId = containerId;
         this.wasteType = wasteType;
-        this.fillLevelPercent = fillLevelPercent;
+        this.fillPercent = fillPercent;
         this.lat = lat;
         this.lng = lng;
-        this.lastTelemetryAt = lastTelemetryAt;
+        this.sourceTimestamp= sourceTimestamp;
+        this.ingestedAt= ingestedAt;
     }
 
-    public String getContainerId() {
+    public Long getContainerId() {
         return containerId;
     }
 
@@ -33,8 +37,8 @@ public class LatestState {
         return wasteType;
     }
 
-    public int getFillLevelPercent() {
-        return fillLevelPercent;
+    public BigDecimal getFillPercent() {
+        return fillPercent;
     }
 
     public double getLat() {
@@ -45,11 +49,15 @@ public class LatestState {
         return lng;
     }
 
-    public OffsetDateTime getLastTelemetryAt() {
-        return lastTelemetryAt;
+    public OffsetDateTime getSourceTimestamp() {
+        return sourceTimestamp;
+    }
+    
+    public OffsetDateTime getIngestedAt() {
+        return ingestedAt;
     }
 
-    public void setContainerId(String containerId) {
+    public void setContainerId(Long containerId) {
         this.containerId = containerId;
     }
 
@@ -57,8 +65,8 @@ public class LatestState {
         this.wasteType = wasteType;
     }
 
-    public void setFillLevelPercent(int fillLevelPercent) {
-        this.fillLevelPercent = fillLevelPercent;
+    public void setFillPercent(BigDecimal fillPercent) {
+        this.fillPercent = fillPercent;
     }
 
     public void setLat(double lat) {
@@ -69,7 +77,12 @@ public class LatestState {
         this.lng = lng;
     }
 
-    public void setLastTelemetryAt(OffsetDateTime lastTelemetryAt) {
-        this.lastTelemetryAt = lastTelemetryAt;
+    
+    public void setSourceTimestamp(OffsetDateTime sourceTimestamp) {
+        this.sourceTimestamp = sourceTimestamp;
+    }
+    
+    public void setIngestedAt(OffsetDateTime ingestedAt) {
+        this.ingestedAt = ingestedAt;
     }
 }

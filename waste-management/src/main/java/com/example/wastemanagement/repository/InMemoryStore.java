@@ -16,49 +16,49 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class InMemoryStore {
 
-    private final Map<String, Driver> drivers = new ConcurrentHashMap<>();
-    private final Map<String, Vehicle> vehicles = new ConcurrentHashMap<>();
-    private final Map<String, Container> containers = new ConcurrentHashMap<>();
-    private final Map<String, TelemetryRecord> telemetryRecords = new ConcurrentHashMap<>();
-    private final Map<String, LatestState> latestStates = new ConcurrentHashMap<>();
-    private final Map<String, RoutePlan> routePlans = new ConcurrentHashMap<>();
-    private final Map<String, RouteStop> routeStops = new ConcurrentHashMap<>();
-    private final Map<String, CollectionRecord> collections = new ConcurrentHashMap<>();
-    private final Map<String, String> tokens = new ConcurrentHashMap<>();
+    private final Map<Long, Driver> drivers = new ConcurrentHashMap<>();
+    private final Map<Long, Vehicle> vehicles = new ConcurrentHashMap<>();
+    private final Map<Long, Container> containers = new ConcurrentHashMap<>();
+    private final Map<Long, TelemetryRecord> telemetryRecords = new ConcurrentHashMap<>();
+    private final Map<Long, LatestState> latestStates = new ConcurrentHashMap<>();
+    private final Map<Long, RoutePlan> routePlans = new ConcurrentHashMap<>();
+    private final Map<Long, RouteStop> routeStops = new ConcurrentHashMap<>();
+    private final Map<Long, CollectionRecord> collections = new ConcurrentHashMap<>();
+    private final Map<String, Long> tokens = new ConcurrentHashMap<>();
 
-    public Map<String, Driver> getDrivers() {
+    public Map<Long, Driver> getDrivers() {
         return drivers;
     }
 
-    public Map<String, Vehicle> getVehicles() {
+    public Map<Long, Vehicle> getVehicles() {
         return vehicles;
     }
 
-    public Map<String, Container> getContainers() {
+    public Map<Long, Container> getContainers() {
         return containers;
     }
 
-    public Map<String, TelemetryRecord> getTelemetryRecords() {
+    public Map<Long, TelemetryRecord> getTelemetryRecords() {
         return telemetryRecords;
     }
 
-    public Map<String, LatestState> getLatestStates() {
+    public Map<Long, LatestState> getLatestStates() {
         return latestStates;
     }
 
-    public Map<String, RoutePlan> getRoutePlans() {
+    public Map<Long, RoutePlan> getRoutePlans() {
         return routePlans;
     }
 
-    public Map<String, RouteStop> getRouteStops() {
+    public Map<Long, RouteStop> getRouteStops() {
         return routeStops;
     }
 
-    public Map<String, CollectionRecord> getCollections() {
+    public Map<Long, CollectionRecord> getCollections() {
         return collections;
     }
 
-    public Map<String, String> getTokens() {
+    public Map<String, Long> getTokens() {
         return tokens;
     }
 }

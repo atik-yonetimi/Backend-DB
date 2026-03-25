@@ -1,50 +1,53 @@
 package com.example.wastemanagement.entity;
 
+import java.time.OffsetDateTime;
+
 public class Driver {
-    private String id;
-    private String fullName;
-    private String vehicleId;
-    private boolean active;
+
+    private Long id;
+    private String plateLogin;
+    private Long assignedVehicleId;
+    private OffsetDateTime createdAt;
 
     public Driver() {
     }
 
-    public Driver(String id, String fullName, String vehicleId, boolean active) {
+    public Driver(Long id, String plateLogin, Long assignedVehicleId, OffsetDateTime createdAt) {
         this.id = id;
-        this.fullName = fullName;
-        this.vehicleId = vehicleId;
-        this.active = active;
+        this.plateLogin = plateLogin;
+        this.assignedVehicleId = assignedVehicleId;
+        this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getPlateLogin() {
+        return plateLogin;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setPlateLogin(String plateLogin) {
+        this.plateLogin = plateLogin;
     }
 
-    public String getVehicleId() {
-        return vehicleId;
+    public Long getAssignedVehicleId() {
+        return assignedVehicleId;
     }
 
-    public void setVehicleId(String vehicleId) {
-        this.vehicleId = vehicleId;
+    public void setAssignedVehicleId(Long assignedVehicleId) {
+        this.assignedVehicleId = assignedVehicleId;
     }
 
-    public boolean isActive() {
-        return active;
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

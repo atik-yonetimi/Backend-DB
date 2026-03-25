@@ -28,11 +28,10 @@ public class RouteMapper {
         response.setVehicleId(routePlan.getVehicleId());
         response.setWasteType(routePlan.getWasteType().name());
         response.setStatus(routePlan.getStatus().name());
-        response.setVersionNo(routePlan.getVersionNo());
-        response.setGeneratedAt(routePlan.getGeneratedAt());
+        response.setGeneratedAt(routePlan.getCreatedAt());
 
-        List<StopResponse> stops = routePlan.getStopIds().stream()
-                .map(id -> store.getRouteStops().get(id))
+        List<StopResponse> stops = store.getRouteStops().values().stream()
+                .filter(stop -> stop.getRoutePlanId().equals(routePlan.getId()))
                 .sorted(Comparator.comparingInt(RouteStop::getSequenceNo))
                 .map(this::toStopResponse)
                 .collect(Collectors.toList());
@@ -46,7 +45,6 @@ public class RouteMapper {
 
         ContainerSummaryResponse containerResponse = new ContainerSummaryResponse();
         containerResponse.setId(container.getId());
-        containerResponse.setContainerCode(container.getContainerCode());
         containerResponse.setWasteType(container.getWasteType().name());
         containerResponse.setLat(container.getLat());
         containerResponse.setLng(container.getLng());
@@ -55,10 +53,6 @@ public class RouteMapper {
         response.setId(stop.getId());
         response.setSequenceNo(stop.getSequenceNo());
         response.setStatus(stop.getStatus().name());
-        response.setArrivalAt(stop.getArrivalAt());
-        response.setCompletedAt(stop.getCompletedAt());
-        response.setSkippedAt(stop.getSkippedAt());
-        response.setSkipReason(stop.getSkipReason());
         response.setContainer(containerResponse);
 
         return response;

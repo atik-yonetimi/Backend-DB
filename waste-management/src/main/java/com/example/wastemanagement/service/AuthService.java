@@ -22,14 +22,15 @@ public class AuthService {
 
     public LoginResponse loginByPlate(String plate) {
         Driver driver = store.getDrivers().values().stream()
-                .filter(d -> {
-                    Vehicle vehicle = store.getVehicles().get(d.getVehicleId());
-                    return vehicle != null && vehicle.getPlate().equalsIgnoreCase(plate);
-                })
+                .filter(d -> d.getPlateLogin() != null && d.getPlateLogin().equalsIgnoreCase(plate))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Plakaya ait sürücü bulunamadı"));
+                .orElseThrow(() -> new NotFoundException("Plakaya ait surucu bulunamadi"));
 
-        Vehicle vehicle = store.getVehicles().get(driver.getVehicleId());
+        Vehicle vehicle = store.getVehicles().get(driver.getAssignedVehicleId());
+        if (vehicle == null) {
+            throw new NotFoundException("Surucuye atanmis arac bulunamadi");
+        }
+
         String token = tokenService.generateToken(driver.getId());
 
         LoginResponse response = new LoginResponse();
@@ -43,15 +44,14 @@ public class AuthService {
     }
 
     public MeResponse me(Driver driver) {
-        Vehicle vehicle = store.getVehicles().get(driver.getVehicleId());
+        Vehicle vehicle = store.getVehicles().get(driver.getAssignedVehicleId());
 
         if (vehicle == null) {
-            throw new NotFoundException("Araç bulunamadı");
+            throw new NotFoundException("Arac bulunamadi");
         }
 
         MeResponse response = new MeResponse();
         response.setDriverId(driver.getId());
-        response.setFullName(driver.getFullName());
         response.setVehicleId(vehicle.getId());
         response.setPlate(vehicle.getPlate());
         response.setWasteType(vehicle.getWasteType().name());

@@ -2,36 +2,27 @@ package com.example.wastemanagement.dto.auth;
 
 public class MeResponse {
 
-    private String driverId;
-    private String fullName;
-    private String vehicleId;
+    private Long driverId;
+    private Long vehicleId;
     private String plate;
     private String wasteType;
 
     public MeResponse() {
     }
 
-    public String getDriverId() {
+    public Long getDriverId() {
         return driverId;
     }
 
-    public void setDriverId(String driverId) {
+    public void setDriverId(Long driverId) {
         this.driverId = driverId;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getVehicleId() {
+    public Long getVehicleId() {
         return vehicleId;
     }
 
-    public void setVehicleId(String vehicleId) {
+    public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
     }
 

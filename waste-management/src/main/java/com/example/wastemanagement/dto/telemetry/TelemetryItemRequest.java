@@ -2,22 +2,21 @@ package com.example.wastemanagement.dto.telemetry;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
 
 public class TelemetryItemRequest {
 
-    @NotBlank
-    private String containerId;
+    @NotNull
+    private Long containerId;
 
     @Min(0)
     @Max(100)
-    private int fillLevelPercent;
+    private double fillPercent;
 
-    private double lat;
-    private double lng;
+    private Double lat;
+    private Double lng;
 
     @NotNull
     private OffsetDateTime recordedAt;
@@ -25,35 +24,35 @@ public class TelemetryItemRequest {
     public TelemetryItemRequest() {
     }
 
-    public String getContainerId() {
+    public Long getContainerId() {
         return containerId;
     }
 
-    public void setContainerId(String containerId) {
+    public void setContainerId(Long containerId) {
         this.containerId = containerId;
     }
 
-    public int getFillLevelPercent() {
-        return fillLevelPercent;
+    public double getFillPercent() {
+        return fillPercent;
     }
 
-    public void setFillLevelPercent(int fillLevelPercent) {
-        this.fillLevelPercent = fillLevelPercent;
+    public void setFillPercent(double fillPercent) {
+        this.fillPercent = fillPercent;
     }
 
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public double getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public void setLng(double lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 

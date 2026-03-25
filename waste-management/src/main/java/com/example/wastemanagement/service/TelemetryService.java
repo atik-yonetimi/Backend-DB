@@ -8,8 +8,9 @@ import com.example.wastemanagement.exception.NotFoundException;
 import com.example.wastemanagement.repository.InMemoryStore;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class TelemetryService {
@@ -26,16 +27,20 @@ public class TelemetryService {
         for (TelemetryItemRequest item : items) {
             Container container = store.getContainers().get(item.getContainerId());
             if (container == null) {
-                throw new NotFoundException("Container bulunamadı: " + item.getContainerId());
+                throw new NotFoundException("Container bulunamadi: " + item.getContainerId());
             }
 
+            Long telemetryId = (long) (store.getTelemetryRecords().size() + 1);
+            OffsetDateTime ingestedAt = OffsetDateTime.now();
+
             TelemetryRecord record = new TelemetryRecord(
-                    "tel_" + UUID.randomUUID().toString().substring(0, 8),
+                    telemetryId,
                     item.getContainerId(),
-                    item.getFillLevelPercent(),
+                    BigDecimal.valueOf(item.getFillPercent()),
                     item.getLat(),
                     item.getLng(),
-                    item.getRecordedAt()
+                    item.getRecordedAt(),
+                    ingestedAt
             );
 
             store.getTelemetryRecords().put(record.getId(), record);
@@ -43,10 +48,11 @@ public class TelemetryService {
             LatestState latestState = new LatestState(
                     item.getContainerId(),
                     container.getWasteType(),
-                    item.getFillLevelPercent(),
+                    BigDecimal.valueOf(item.getFillPercent()),
                     item.getLat(),
                     item.getLng(),
-                    item.getRecordedAt()
+                    item.getRecordedAt(),
+                    ingestedAt
             );
 
             store.getLatestStates().put(item.getContainerId(), latestState);

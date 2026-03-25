@@ -1,9 +1,9 @@
 package com.example.wastemanagement.enums;
 
 public enum WasteType {
-    GLASS,
-    PLASTIC,
-    PAPER,
-    SECOND_HAND,
+    CAM,
+    PLASTIK,
+    KAGIT,
+    IKINCI_EL_ESYA,
     METAL
 }
