@@ -1,20 +1,41 @@
 package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.WasteType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.time.OffsetDateTime;
 
+@Entity
+@Table(name = "vehicles")
 public class Vehicle {
+
+    @Id
     private Long id;
+
     private String plate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "waste_type")
     private WasteType wasteType;
-    private double garageLat;
-    private double garageLng;
+
+    @Column(name = "garage_lat")
+    private Double garageLat;
+
+    @Column(name = "garage_lng")
+    private Double garageLng;
+
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     public Vehicle() {
     }
 
-    public Vehicle(Long id, String plate, WasteType wasteType, double garageLat, double garageLng, OffsetDateTime createdAt) {
+    public Vehicle(Long id, String plate, WasteType wasteType, Double garageLat, Double garageLng, OffsetDateTime createdAt) {
         this.id = id;
         this.plate = plate;
         this.wasteType = wasteType;
@@ -35,15 +56,15 @@ public class Vehicle {
         return wasteType;
     }
 
-    public double getGarageLat() {
+    public Double getGarageLat() {
         return garageLat;
     }
 
-    public double getGarageLng() {
+    public Double getGarageLng() {
         return garageLng;
     }
 
-    public OffsetDateTime getcreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
@@ -59,15 +80,15 @@ public class Vehicle {
         this.wasteType = wasteType;
     }
 
-    public void setGarageLat(double garageLat) {
+    public void setGarageLat(Double garageLat) {
         this.garageLat = garageLat;
     }
 
-    public void setGarageLng(double garageLng) {
+    public void setGarageLng(Double garageLng) {
         this.garageLng = garageLng;
     }
 
-    public void setCreateAt(OffsetDateTime createdAt) {
+    public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

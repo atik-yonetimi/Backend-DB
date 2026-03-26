@@ -1,28 +1,51 @@
 package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.StopStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 import java.time.OffsetDateTime;
 
+@Entity
+@Table(name = "route_stops")
 public class RouteStop {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "route_plan_id")
     private Long routePlanId;
+
+    @Column(name = "container_id")
     private Long containerId;
-    private int sequenceNo;
+
+    @Column(name = "sequence_no")
+    private Integer sequenceNo;
+
+    @Enumerated(EnumType.STRING)
     private StopStatus status;
+
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     public RouteStop() {
     }
 
     public RouteStop(Long id, Long routePlanId, Long containerId,
-                     int sequenceNo, StopStatus status,OffsetDateTime createdAt ) {
+                     Integer sequenceNo, StopStatus status, OffsetDateTime createdAt) {
         this.id = id;
         this.routePlanId = routePlanId;
         this.containerId = containerId;
         this.sequenceNo = sequenceNo;
         this.status = status;
-        this.createdAt= createdAt;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -37,7 +60,7 @@ public class RouteStop {
         return containerId;
     }
 
-    public int getSequenceNo() {
+    public Integer getSequenceNo() {
         return sequenceNo;
     }
 
@@ -48,7 +71,6 @@ public class RouteStop {
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
-
 
     public void setId(Long id) {
         this.id = id;
@@ -62,7 +84,7 @@ public class RouteStop {
         this.containerId = containerId;
     }
 
-    public void setSequenceNo(int sequenceNo) {
+    public void setSequenceNo(Integer sequenceNo) {
         this.sequenceNo = sequenceNo;
     }
 
