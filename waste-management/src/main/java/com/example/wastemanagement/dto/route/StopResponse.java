@@ -1,11 +1,9 @@
 package com.example.wastemanagement.dto.route;
 
-import java.time.OffsetDateTime;
-
 public class StopResponse {
 
     private Long id;
-    private int sequenceNo;
+    private Integer sequenceNo;
     private String status;
     private ContainerSummaryResponse container;
 
@@ -16,7 +14,7 @@ public class StopResponse {
         return id;
     }
 
-    public int getSequenceNo() {
+    public Integer getSequenceNo() {
         return sequenceNo;
     }
 
@@ -28,12 +26,11 @@ public class StopResponse {
         return container;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setSequenceNo(int sequenceNo) {
+    public void setSequenceNo(Integer sequenceNo) {
         this.sequenceNo = sequenceNo;
     }
 
@@ -44,5 +41,4 @@ public class StopResponse {
     public void setContainer(ContainerSummaryResponse container) {
         this.container = container;
     }
-
 }

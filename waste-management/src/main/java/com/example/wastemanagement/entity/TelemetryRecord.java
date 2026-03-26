@@ -1,30 +1,56 @@
 package com.example.wastemanagement.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+@Entity
+@Table(name = "telemetry")
 public class TelemetryRecord {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "container_id")
     private Long containerId;
+
+    @Column(name = "fill_percent")
     private BigDecimal fillPercent;
-    private double lat;
-    private double lng;
+
+    private Double lat;
+
+    private Double lng;
+
+    @Column(name = "source_timestamp")
     private OffsetDateTime sourceTimestamp;
+
+    @Column(name = "ingested_at")
     private OffsetDateTime ingestedAt;
-    
 
     public TelemetryRecord() {
     }
 
-    public TelemetryRecord(Long id, Long containerId, BigDecimal fillPercent,
-                           double lat, double lng, OffsetDateTime sourceTimestamp, OffsetDateTime ingestedAt) {
+    public TelemetryRecord(Long id,
+                           Long containerId,
+                           BigDecimal fillPercent,
+                           Double lat,
+                           Double lng,
+                           OffsetDateTime sourceTimestamp,
+                           OffsetDateTime ingestedAt) {
         this.id = id;
         this.containerId = containerId;
         this.fillPercent = fillPercent;
         this.lat = lat;
         this.lng = lng;
         this.sourceTimestamp = sourceTimestamp;
-        this.ingestedAt= ingestedAt;
+        this.ingestedAt = ingestedAt;
     }
 
     public Long getId() {
@@ -39,18 +65,18 @@ public class TelemetryRecord {
         return fillPercent;
     }
 
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public double getLng() {
+    public Double getLng() {
         return lng;
     }
 
     public OffsetDateTime getSourceTimestamp() {
         return sourceTimestamp;
     }
-    
+
     public OffsetDateTime getIngestedAt() {
         return ingestedAt;
     }
@@ -67,18 +93,18 @@ public class TelemetryRecord {
         this.fillPercent = fillPercent;
     }
 
-    public void setLat(double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public void setLng(double lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 
     public void setSourceTimestamp(OffsetDateTime sourceTimestamp) {
         this.sourceTimestamp = sourceTimestamp;
     }
-    
+
     public void setIngestedAt(OffsetDateTime ingestedAt) {
         this.ingestedAt = ingestedAt;
     }

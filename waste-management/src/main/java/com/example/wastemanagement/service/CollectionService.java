@@ -1,6 +1,5 @@
 package com.example.wastemanagement.service;
 
-import com.example.wastemanagement.repository.InMemoryStore;
 import com.example.wastemanagement.dto.collection.CollectionCreateRequest;
 import com.example.wastemanagement.dto.collection.CollectionResponse;
 import com.example.wastemanagement.entity.CollectionRecord;
@@ -11,6 +10,8 @@ import com.example.wastemanagement.enums.CollectionResult;
 import com.example.wastemanagement.enums.RouteStatus;
 import com.example.wastemanagement.enums.StopStatus;
 import com.example.wastemanagement.exception.NotFoundException;
+import com.example.wastemanagement.repository.CollectionRepository;
+import com.example.wastemanagement.repository.RouteStopRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,19 +20,21 @@ import java.time.OffsetDateTime;
 @Service
 public class CollectionService {
 
-    private final InMemoryStore store;
+    private final RouteStopRepository routeStopRepository;
+    private final CollectionRepository collectionRepository;
     private final StopService stopService;
 
-    public CollectionService(InMemoryStore store, StopService stopService) {
-        this.store = store;
+    public CollectionService(RouteStopRepository routeStopRepository,
+                             CollectionRepository collectionRepository,
+                             StopService stopService) {
+        this.routeStopRepository = routeStopRepository;
+        this.collectionRepository = collectionRepository;
         this.stopService = stopService;
     }
 
     public CollectionResponse createCollection(CollectionCreateRequest request, Driver currentDriver) {
-        RouteStop stop = store.getRouteStops().get(request.getRouteStopId());
-        if (stop == null) {
-            throw new NotFoundException("Durak bulunamadi");
-        }
+        RouteStop stop = routeStopRepository.findById(request.getRouteStopId())
+                .orElseThrow(() -> new NotFoundException("Durak bulunamadi"));
 
         RoutePlan routePlan = stopService.validateStopAccess(stop, currentDriver);
 
@@ -43,18 +46,15 @@ public class CollectionService {
             throw new IllegalStateException("Skipped durak icin collection eklenemez");
         }
 
-        boolean exists = store.getCollections().values().stream()
-                .anyMatch(c -> c.getRouteStopId().equals(stop.getId()));
-
+        boolean exists = collectionRepository.existsByRouteStopId(stop.getId());
         if (exists) {
             throw new IllegalStateException("Bu durak icin collection zaten var");
         }
 
-        Long collectionId = (long) (store.getCollections().size() + 1);
         OffsetDateTime now = OffsetDateTime.now();
 
         CollectionRecord record = new CollectionRecord(
-                collectionId,
+                null,
                 stop.getId(),
                 currentDriver.getId(),
                 routePlan.getVehicleId(),
@@ -68,18 +68,23 @@ public class CollectionService {
                 now
         );
 
-        store.getCollections().put(record.getId(), record);
+        record.setNote(request.getNote());
+
+        record = collectionRepository.save(record);
 
         stop.setStatus(StopStatus.DONE);
+        routeStopRepository.save(stop);
 
         CollectionResponse response = new CollectionResponse();
         response.setId(record.getId());
         response.setRouteStopId(record.getRouteStopId());
         response.setVehicleId(record.getVehicleId());
         response.setDriverId(record.getDriverId());
+        response.setResult(record.getResult().name());
         response.setCollectedKg(record.getAmountKg().doubleValue());
+        response.setSkipReason(record.getSkipReason());
         response.setCollectedAt(record.getCollectedAt());
-        response.setNote(request.getNote());
+        response.setNote(record.getNote());
 
         return response;
     }

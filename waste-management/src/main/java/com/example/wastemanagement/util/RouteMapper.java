@@ -6,20 +6,24 @@ import com.example.wastemanagement.dto.route.StopResponse;
 import com.example.wastemanagement.entity.Container;
 import com.example.wastemanagement.entity.RoutePlan;
 import com.example.wastemanagement.entity.RouteStop;
-import com.example.wastemanagement.repository.InMemoryStore;
+import com.example.wastemanagement.exception.NotFoundException;
+import com.example.wastemanagement.repository.ContainerRepository;
+import com.example.wastemanagement.repository.RouteStopRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class RouteMapper {
 
-    private final InMemoryStore store;
+    private final RouteStopRepository routeStopRepository;
+    private final ContainerRepository containerRepository;
 
-    public RouteMapper(InMemoryStore store) {
-        this.store = store;
+    public RouteMapper(RouteStopRepository routeStopRepository,
+                       ContainerRepository containerRepository) {
+        this.routeStopRepository = routeStopRepository;
+        this.containerRepository = containerRepository;
     }
 
     public RoutePlanResponse toRoutePlanResponse(RoutePlan routePlan) {
@@ -30,9 +34,8 @@ public class RouteMapper {
         response.setStatus(routePlan.getStatus().name());
         response.setGeneratedAt(routePlan.getCreatedAt());
 
-        List<StopResponse> stops = store.getRouteStops().values().stream()
-                .filter(stop -> stop.getRoutePlanId().equals(routePlan.getId()))
-                .sorted(Comparator.comparingInt(RouteStop::getSequenceNo))
+        List<StopResponse> stops = routeStopRepository.findByRoutePlanIdOrderBySequenceNoAsc(routePlan.getId())
+                .stream()
                 .map(this::toStopResponse)
                 .collect(Collectors.toList());
 
@@ -41,7 +44,8 @@ public class RouteMapper {
     }
 
     public StopResponse toStopResponse(RouteStop stop) {
-        Container container = store.getContainers().get(stop.getContainerId());
+        Container container = containerRepository.findById(stop.getContainerId())
+                .orElseThrow(() -> new NotFoundException("Container bulunamadi: " + stop.getContainerId()));
 
         ContainerSummaryResponse containerResponse = new ContainerSummaryResponse();
         containerResponse.setId(container.getId());
