@@ -1,30 +1,35 @@
 package com.example.wastemanagement.service;
 
-import com.example.wastemanagement.repository.InMemoryStore;
 import com.example.wastemanagement.dto.stop.StopStatusUpdateRequest;
-import com.example.wastemanagement.entity.CollectionRecord;
 import com.example.wastemanagement.entity.Driver;
 import com.example.wastemanagement.entity.RoutePlan;
 import com.example.wastemanagement.entity.RouteStop;
 import com.example.wastemanagement.enums.RouteStatus;
 import com.example.wastemanagement.enums.StopStatus;
 import com.example.wastemanagement.exception.NotFoundException;
+import com.example.wastemanagement.repository.CollectionRepository;
+import com.example.wastemanagement.repository.RoutePlanRepository;
+import com.example.wastemanagement.repository.RouteStopRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StopService {
 
-    private final InMemoryStore store;
+    private final RouteStopRepository routeStopRepository;
+    private final RoutePlanRepository routePlanRepository;
+    private final CollectionRepository collectionRepository;
 
-    public StopService(InMemoryStore store) {
-        this.store = store;
+    public StopService(RouteStopRepository routeStopRepository,
+                       RoutePlanRepository routePlanRepository,
+                       CollectionRepository collectionRepository) {
+        this.routeStopRepository = routeStopRepository;
+        this.routePlanRepository = routePlanRepository;
+        this.collectionRepository = collectionRepository;
     }
 
     public RouteStop updateStopStatus(Long stopId, StopStatusUpdateRequest request, Driver currentDriver) {
-        RouteStop stop = store.getRouteStops().get(stopId);
-        if (stop == null) {
-            throw new NotFoundException("Durak bulunamadi");
-        }
+        RouteStop stop = routeStopRepository.findById(stopId)
+                .orElseThrow(() -> new NotFoundException("Durak bulunamadi"));
 
         RoutePlan routePlan = validateStopAccess(stop, currentDriver);
 
@@ -44,9 +49,7 @@ public class StopService {
         }
 
         if (request.getStatus() == StopStatus.DONE) {
-            boolean collectionExists = store.getCollections().values().stream()
-                    .map(CollectionRecord::getRouteStopId)
-                    .anyMatch(id -> id.equals(stop.getId()));
+            boolean collectionExists = collectionRepository.existsByRouteStopId(stop.getId());
 
             if (!collectionExists) {
                 throw new IllegalStateException("Done icin once collection kaydi olusturulmalidir");
@@ -59,14 +62,12 @@ public class StopService {
             stop.setStatus(StopStatus.SKIPPED);
         }
 
-        return stop;
+        return routeStopRepository.save(stop);
     }
 
     public RoutePlan validateStopAccess(RouteStop stop, Driver currentDriver) {
-        RoutePlan routePlan = store.getRoutePlans().get(stop.getRoutePlanId());
-        if (routePlan == null) {
-            throw new NotFoundException("Rota bulunamadi");
-        }
+        RoutePlan routePlan = routePlanRepository.findById(stop.getRoutePlanId())
+                .orElseThrow(() -> new NotFoundException("Rota bulunamadi"));
 
         if (!routePlan.getVehicleId().equals(currentDriver.getAssignedVehicleId())) {
             throw new IllegalArgumentException("Bu duraga erisim yetkiniz yok");

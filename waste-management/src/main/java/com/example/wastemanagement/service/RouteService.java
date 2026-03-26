@@ -1,16 +1,19 @@
 package com.example.wastemanagement.service;
 
-import com.example.wastemanagement.repository.InMemoryStore;
 import com.example.wastemanagement.config.AppConstants;
-import com.example.wastemanagement.entity.LatestState;
 import com.example.wastemanagement.entity.RoutePlan;
 import com.example.wastemanagement.entity.RouteStop;
+import com.example.wastemanagement.entity.TelemetryRecord;
 import com.example.wastemanagement.entity.Vehicle;
 import com.example.wastemanagement.enums.RouteStatus;
 import com.example.wastemanagement.enums.StopStatus;
 import com.example.wastemanagement.enums.TriggerMode;
 import com.example.wastemanagement.enums.WasteType;
 import com.example.wastemanagement.exception.NotFoundException;
+import com.example.wastemanagement.repository.RoutePlanRepository;
+import com.example.wastemanagement.repository.RouteStopRepository;
+import com.example.wastemanagement.repository.TelemetryRepository;
+import com.example.wastemanagement.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,19 +21,29 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class RouteService {
 
-    private final InMemoryStore store;
+    private final VehicleRepository vehicleRepository;
+    private final RoutePlanRepository routePlanRepository;
+    private final RouteStopRepository routeStopRepository;
+    private final TelemetryRepository telemetryRepository;
 
-    public RouteService(InMemoryStore store) {
-        this.store = store;
+    public RouteService(VehicleRepository vehicleRepository,
+                        RoutePlanRepository routePlanRepository,
+                        RouteStopRepository routeStopRepository,
+                        TelemetryRepository telemetryRepository) {
+        this.vehicleRepository = vehicleRepository;
+        this.routePlanRepository = routePlanRepository;
+        this.routeStopRepository = routeStopRepository;
+        this.telemetryRepository = telemetryRepository;
     }
 
     public RoutePlan generateRoute(WasteType wasteType, TriggerMode generationMode) {
-        Vehicle vehicle = store.getVehicles().values().stream()
+        Vehicle vehicle = vehicleRepository.findAll().stream()
                 .filter(v -> v.getWasteType() == wasteType)
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Bu atik turu icin arac bulunamadi"));
@@ -38,60 +51,69 @@ public class RouteService {
         RoutePlan previousActive = getActiveRouteForVehicle(vehicle.getId());
         if (previousActive != null) {
             previousActive.setStatus(RouteStatus.CANCELLED);
+            routePlanRepository.save(previousActive);
         }
 
-        List<LatestState> candidates = selectCandidates(wasteType);
-        List<LatestState> ordered = nearestNeighborOrder(vehicle, candidates);
+        List<TelemetryRecord> candidates = selectCandidates();
+        List<TelemetryRecord> filteredByWasteType = candidates.stream()
+                .filter(t -> vehicle.getWasteType() == wasteType)
+                .collect(Collectors.toList());
 
-        Long routePlanId = (long) (store.getRoutePlans().size() + 1);
+        List<TelemetryRecord> ordered = nearestNeighborOrder(vehicle, filteredByWasteType);
 
         RoutePlan routePlan = new RoutePlan(
-                routePlanId,
+                null,
                 vehicle.getId(),
                 wasteType,
                 RouteStatus.ACTIVE,
                 OffsetDateTime.now()
         );
 
-        store.getRoutePlans().put(routePlan.getId(), routePlan);
+        routePlan = routePlanRepository.save(routePlan);
 
         int sequence = 1;
-        for (LatestState state : ordered) {
-            Long stopId = (long) (store.getRouteStops().size() + 1);
-
+        for (TelemetryRecord telemetry : ordered) {
             RouteStop stop = new RouteStop(
-                    stopId,
+                    null,
                     routePlan.getId(),
-                    state.getContainerId(),
+                    telemetry.getContainerId(),
                     sequence++,
                     StopStatus.PENDING,
                     OffsetDateTime.now()
             );
 
-            store.getRouteStops().put(stop.getId(), stop);
+            routeStopRepository.save(stop);
         }
 
         return routePlan;
     }
 
     public RoutePlan getActiveRouteForVehicle(Long vehicleId) {
-        return store.getRoutePlans().values().stream()
-                .filter(r -> r.getVehicleId().equals(vehicleId))
-                .filter(r -> r.getStatus() == RouteStatus.ACTIVE)
-                .max(Comparator.comparing(RoutePlan::getCreatedAt))
-                .orElse(null);
-    }
+        return routePlanRepository.findAll().stream()
+            .filter(r -> r.getVehicleId().equals(vehicleId))
+            .filter(r -> r.getStatus() == RouteStatus.ACTIVE)
+            .max(java.util.Comparator.comparing(RoutePlan::getCreatedAt))
+            .orElse(null);
+}
 
-    private List<LatestState> selectCandidates(WasteType wasteType) {
-        return store.getLatestStates().values().stream()
-                .filter(s -> s.getWasteType() == wasteType)
-                .filter(s -> s.getFillPercent().compareTo(BigDecimal.valueOf(AppConstants.THRESHOLD_PERCENT)) >= 0)
+    private List<TelemetryRecord> selectCandidates() {
+        List<TelemetryRecord> allTelemetry = telemetryRepository.findAll();
+
+        Map<Long, TelemetryRecord> latestByContainer = allTelemetry.stream()
+                .collect(Collectors.toMap(
+                        TelemetryRecord::getContainerId,
+                        t -> t,
+                        (t1, t2) -> t1.getSourceTimestamp().isAfter(t2.getSourceTimestamp()) ? t1 : t2
+                ));
+
+        return latestByContainer.values().stream()
+                .filter(t -> t.getFillPercent().compareTo(BigDecimal.valueOf(AppConstants.THRESHOLD_PERCENT)) >= 0)
                 .collect(Collectors.toList());
     }
 
-    private List<LatestState> nearestNeighborOrder(Vehicle vehicle, List<LatestState> states) {
-        List<LatestState> remaining = new ArrayList<>(states);
-        List<LatestState> ordered = new ArrayList<>();
+    private List<TelemetryRecord> nearestNeighborOrder(Vehicle vehicle, List<TelemetryRecord> telemetryList) {
+        List<TelemetryRecord> remaining = new ArrayList<>(telemetryList);
+        List<TelemetryRecord> ordered = new ArrayList<>();
 
         double currentLat = vehicle.getGarageLat();
         double currentLng = vehicle.getGarageLng();
@@ -100,8 +122,8 @@ public class RouteService {
             final double refLat = currentLat;
             final double refLng = currentLng;
 
-            LatestState nearest = remaining.stream()
-                    .min(Comparator.comparingDouble(s -> distance(refLat, refLng, s.getLat(), s.getLng())))
+            TelemetryRecord nearest = remaining.stream()
+                    .min(Comparator.comparingDouble(t -> distance(refLat, refLng, t.getLat(), t.getLng())))
                     .orElseThrow();
 
             ordered.add(nearest);

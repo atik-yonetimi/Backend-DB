@@ -55,7 +55,6 @@ public class RoutePlanResponse {
         this.status = status;
     }
 
-
     public void setGeneratedAt(OffsetDateTime generatedAt) {
         this.generatedAt = generatedAt;
     }

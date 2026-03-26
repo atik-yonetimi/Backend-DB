@@ -1,16 +1,33 @@
 package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.WasteType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.OffsetDateTime;
 
+@Entity
+@Table(name = "containers")
 public class Container {
 
+    @Id
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "waste_type")
     private WasteType wasteType;
+
     private Double lat;
+
     private Double lng;
+
     private String status;
+
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     public Container() {

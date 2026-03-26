@@ -1,24 +1,59 @@
 package com.example.wastemanagement.entity;
 
 import com.example.wastemanagement.enums.CollectionResult;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+@Entity
+@Table(name = "collections")
 public class CollectionRecord {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "route_stop_id")
     private Long routeStopId;
+
+    @Column(name = "driver_id")
     private Long driverId;
+
+    @Column(name = "vehicle_id")
     private Long vehicleId;
+
+    @Enumerated(EnumType.STRING)
     private CollectionResult result;
+
+    @Column(name = "amount_kg")
     private BigDecimal amountKg;
+
+    @Column(name = "skip_reason")
     private String skipReason;
+
+    @Column(name = "collected_at")
     private OffsetDateTime collectedAt;
+
+    @Column(name = "gps_lat")
     private Double gpsLat;
+
+    @Column(name = "gps_lng")
     private Double gpsLng;
+
+    @Column(name = "idempotency_key")
     private String idempotencyKey;
+
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
+
     private String note;
 
     public CollectionRecord() {
