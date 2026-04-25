@@ -1,51 +1,93 @@
-# Akıllı Atık Yönetimi Veritabanı
+# ♻️ Akıllı Atık Yönetimi Veritabanı
 
-Bu klasör, Akıllı Atık Yönetimi projesinin PostgreSQL veritabanı dosyalarını içerir.
+Bu klasör, Akıllı Atık Yönetimi projesinin PostgreSQL veritabanını içerir.
 
-Bu veritabanı; konteynerleri, araçları, sürücüleri, rota planlarını, atık toplama işlemlerini, misafir şikayetlerini ve haftalık atık miktarı takibini yönetmek için tasarlanmıştır.
-
----
-
-## Projenin Amacı
-
-Bu sistemin amacı, farklı atık türlerine ait konteynerlerin takibini yapmak, araçların bu konteynerlerden atık toplamasını kaydetmek ve yöneticinin sistem üzerindeki verileri kontrol edebilmesini sağlamaktır.
-
-### Sistem Akışı
-
-1. Konteynerler kampüs içerisine yerleştirilir  
-2. Araçlar atık türlerine göre tanımlanır  
-3. Sürücüler plaka ve şifre ile giriş yapar  
-4. Araçlar konteynerleri ziyaret eder  
-5. Toplama işlemleri kaydedilir  
-6. Haftalık toplamlar güncellenir  
-7. Yönetici sistemi kontrol eder  
+Sistem; konteynerler, araçlar, sürücüler, rota planları, atık toplama işlemleri, şikayetler ve haftalık atık takibini yönetmek için tasarlanmıştır.
 
 ---
 
-## Kullanılan Teknolojiler
+## 🎯 Projenin Amacı
 
-- PostgreSQL
-- Docker
-- SQL
-- Git / GitHub
+Bu sistemin amacı:
+
+- Atık konteynerlerini takip etmek  
+- Araçlarla toplama işlemlerini yönetmek  
+- Haftalık atık analizini yapmak  
+- Kullanıcı ve yönetici etkileşimini sağlamak  
 
 ---
 
-## Veritabanı Kurulumu
+## ⚙️ Sistem Akışı
 
-### Veritabanı oluştur:
+```mermaid
+flowchart TD
+    A[Konteynerler] --> B[Araçlar]
+    B --> C[Sürücü Girişi]
+    C --> D[Toplama İşlemi]
+    D --> E[Collections Tablosu]
+    E --> F[Weekly Waste Totals]
+    G[Misafir] --> H[Şikayet Gönderir]
+    H --> I[Complaints Tablosu]
+    I --> J[Yönetici]
+```
+
+---
+
+## 🧱 ER Diyagramı
+
+```mermaid
+erDiagram
+    VEHICLES ||--o{ DRIVERS : assigned_to
+    VEHICLES ||--o{ ROUTE_PLANS : used_in
+    VEHICLES ||--o{ COLLECTIONS : performs
+
+    CONTAINERS ||--o{ TELEMETRY : sends
+    CONTAINERS ||--o{ ROUTE_STOPS : included_in
+
+    ROUTE_PLANS ||--o{ ROUTE_STOPS : contains
+    ROUTE_STOPS ||--o{ COLLECTIONS : collected_at
+
+    DRIVERS ||--o{ COLLECTIONS : makes
+
+    VEHICLES {
+        bigint id PK
+        varchar plate
+        waste_type_enum waste_type
+    }
+
+    CONTAINERS {
+        bigint id PK
+        waste_type_enum waste_type
+        double lat
+        double lng
+    }
+
+    COLLECTIONS {
+        bigint id PK
+        numeric amount_kg
+        timestamptz collected_at
+    }
+```
+
+---
+
+## 🛠️ Kullanılan Teknolojiler
+
+- PostgreSQL  
+- Docker  
+- SQL  
+- Git & GitHub  
+
+---
+
+## 🚀 Kurulum
 
 ```bash
 createdb -U postgres atik_yonetimi
-```
-
-### SQL yükle:
-
-```bash
 psql -U postgres -d atik_yonetimi < database/atik_yonetimi.sql
 ```
 
-### Docker:
+Docker:
 
 ```bash
 docker exec -i atik-postgres psql -U postgres -d atik_yonetimi < database/atik_yonetimi.sql
@@ -53,29 +95,22 @@ docker exec -i atik-postgres psql -U postgres -d atik_yonetimi < database/atik_y
 
 ---
 
-## Atık Türleri
+## 🗑️ Atık Türleri
 
-- CAM
-- PLASTIK
-- KAGIT
-- IKINCI_EL_ESYA
-- METAL
+- CAM  
+- PLASTIK  
+- KAGIT  
+- IKINCI_EL_ESYA  
+- METAL  
 
 ---
 
-## Araçlar (vehicles)
+## 🚛 Araçlar
 
-- Toplam: 10 araç  
-- Her kategoride: 2 araç  
+- Toplam: **10 araç**
+- Her kategoride: **2 araç**
 
-Araç bilgileri:
-
-- Plaka  
-- Atık türü  
-- Garaj konumu  
-- Şifre  
-
-Giriş örneği:
+Giriş sistemi:
 
 ```sql
 SELECT id, plate
@@ -86,83 +121,46 @@ AND login_password = 'plastik02pass';
 
 ---
 
-## Konteynerler (containers)
+## 📍 Konteynerler
 
-- Toplam: 75 konteyner  
-- Her kategoride: 15 konteyner  
-- 15 farklı konum  
+- Toplam: **75 konteyner**
+- Her kategoride: **15 adet**
+- **15 farklı lokasyon**
 
-Her konumda:
+Her lokasyonda:
 
-- 1 CAM  
-- 1 PLASTIK  
-- 1 KAGIT  
-- 1 IKINCI_EL_ESYA  
-- 1 METAL  
+✔️ 5 farklı atık türü
 
 ---
 
-## Telemetry
+## 📡 Telemetry
 
-Konteynerlerden gelen anlık veriler tutulur:
+Konteynerlerden gelen:
 
-- Doluluk
-- Pil seviyesi
-- Zaman bilgisi
-
----
-
-## View: latest_container_state
-
-Her konteynerin en güncel durumunu gösterir.
+- Doluluk  
+- Pil seviyesi  
+- Zaman bilgisi  
 
 ---
 
-## Sürücüler
+## 🔄 Toplama Sistemi
 
-- Araçlarla ilişkilidir  
-- Foreign key ile bağlıdır  
+Toplama işlemleri `collections` tablosunda tutulur.
 
----
-
-## Rota Sistemi
-
-### route_plans
-
-- Araç bazlı rota
-
-### route_stops
-
-Durumlar:
-
-- PENDING  
-- DONE  
-- SKIPPED  
+✔️ kg bilgisi  
+✔️ GPS konumu  
+✔️ sürücü & araç ilişkisi  
 
 ---
 
-## Toplama İşlemleri (collections)
-
-- Toplanan kg tutulur  
-- GPS bilgisi saklanır  
-- Driver ve araç ilişkili  
-
----
-
-## Idempotency
-
-Aynı işlemin tekrar kaydedilmesini engeller.
-
----
-
-## Haftalık Atık Takibi
+## 🧠 Haftalık Atık Takibi
 
 `weekly_waste_totals` tablosu:
 
-- Haftalık kg tutar  
-- Otomatik güncellenir (trigger)  
+- Haftalık kg hesaplar  
+- Otomatik güncellenir  
 
-Sıfırlama:
+Reset:
 
 ```sql
 SELECT reset_weekly_waste_totals();
@@ -170,74 +168,63 @@ SELECT reset_weekly_waste_totals();
 
 ---
 
-## Şikayet Sistemi
+## 🧾 Şikayet Sistemi
 
-Misafirler şikayet gönderir → `complaints` tablosu
+Misafir → Şikayet gönderir  
+→ `complaints` tablosuna kaydedilir  
 
 Yönetici:
 
-- Görüntüler  
+- Görür  
 - Siler  
 
 ---
 
-## Yönetici İşlemleri
+## 👨‍💼 Yönetici Yetkileri
 
 - Araç ekleme  
 - Araç silme  
 - Şikayet yönetimi  
-- Haftalık verileri görme  
+- Veri izleme  
 
 ---
 
-## Foreign Key Yapısı
-
-Tablolar birbirine bağlıdır:
+## 🔗 Veri İlişkileri
 
 - drivers → vehicles  
 - telemetry → containers  
-- collections → vehicles / drivers / route_stops  
+- collections → vehicles  
 
 ---
 
-## Constraint Kuralları
+## 🛡️ Constraint Kuralları
 
-- Latitude / Longitude sınırları  
 - Negatif kg yasak  
+- Plate UNIQUE  
 - DONE → amount zorunlu  
 - SKIPPED → reason zorunlu  
-- Plate UNIQUE  
 
 ---
 
-## Index Kullanımı
+## ⚡ Sistem Özeti
 
-Performans için:
-
-- telemetry index  
-- route index  
-- collections index  
-
----
-
-## Sistem Özeti
-
-- 5 atık türü  
-- 10 araç  
-- 75 konteyner  
-- 15 lokasyon  
-- Login sistemi  
-- Şikayet sistemi  
-- Haftalık atık takibi  
+| Özellik | Değer |
+|--------|------|
+| Atık Türü | 5 |
+| Araç | 10 |
+| Konteyner | 75 |
+| Lokasyon | 15 |
 
 ---
 
-## Not
+## ⚠️ Not
 
 Bu proje eğitim amaçlıdır.
 
 Gerçek sistemde:
 
 - Şifreler hashlenmelidir  
-- Yetkilendirme yapılmalıdır  
-- Cron job ile haftalık reset yapılmalıdır  
+- Yetkilendirme eklenmelidir  
+- Cron job ile otomasyon yapılmalıdır  
+
+---
