@@ -1,163 +1,243 @@
-# 🗄️ Atık Yönetimi Veritabanı (PostgreSQL)
+# Akıllı Atık Yönetimi Veritabanı
 
-Bu proje, akıllı atık toplama sistemine ait veritabanı tasarımını içermektedir. Sistem; konteynerlerden gelen doluluk verilerini işleyerek rota planlama ve toplama süreçlerini yönetmek amacıyla geliştirilmiştir. Veritabanı PostgreSQL kullanılarak ilişkisel bir yapı üzerinde tasarlanmış ve veri bütünlüğü, performans ve sürdürülebilirlik ön planda tutulmuştur.
+Bu klasör, Akıllı Atık Yönetimi projesinin PostgreSQL veritabanı dosyalarını içerir.
 
----
-
-# 🎯 Sistem Mantığı
-
-Sistem şu akışla çalışır:
-
-1. Konteynerler doluluk verisi gönderir (**telemetry**)
-2. En güncel durum hesaplanır (**latest_container_state**)
-3. %60 üzeri dolu konteynerler seçilir
-4. Araçlara rota atanır (**route_plans, route_stops**)
-5. Toplama işlemleri kaydedilir (**collections**)
+Bu veritabanı; konteynerleri, araçları, sürücüleri, rota planlarını, atık toplama işlemlerini, misafir şikayetlerini ve haftalık atık miktarı takibini yönetmek için tasarlanmıştır.
 
 ---
 
-# 🧱 Veritabanı Yapısı
+## Projenin Amacı
 
-## Ana Tablolar
+Bu sistemin amacı, farklı atık türlerine ait konteynerlerin takibini yapmak, araçların bu konteynerlerden atık toplamasını kaydetmek ve yöneticinin sistem üzerindeki verileri kontrol edebilmesini sağlamaktır.
 
-* **containers** → Konteyner bilgileri
-* **telemetry** → Sensör verileri (zaman serisi)
-* **vehicles** → Araçlar
-* **drivers** → Sürücüler (login sistemi)
-* **route_plans** → Rota planları
-* **route_stops** → Rotadaki duraklar
-* **collections** → Toplama işlemleri
+### Sistem Akışı
 
----
-
-# 🔗 ER Diyagram (Şema)
-
-```mermaid
-erDiagram
-
-    containers ||--o{ telemetry : "veri gönderir"
-    vehicles ||--o{ drivers : "atanır"
-    vehicles ||--o{ route_plans : "rota alır"
-    route_plans ||--o{ route_stops : "durak içerir"
-    containers ||--o{ route_stops : "hedef"
-    route_stops ||--o{ collections : "toplanır"
-    drivers ||--o{ collections : "yapar"
-    vehicles ||--o{ collections : "kullanılır"
-```
+1. Konteynerler kampüs içerisine yerleştirilir  
+2. Araçlar atık türlerine göre tanımlanır  
+3. Sürücüler plaka ve şifre ile giriş yapar  
+4. Araçlar konteynerleri ziyaret eder  
+5. Toplama işlemleri kaydedilir  
+6. Haftalık toplamlar güncellenir  
+7. Yönetici sistemi kontrol eder  
 
 ---
 
-# ⚡ View (Kritik Bileşen)
+## Kullanılan Teknolojiler
 
-## latest_container_state
-
-Her konteynerin en güncel doluluk bilgisini verir.
-
-📌 Amaç:
-
-* Tüm telemetry verisini taramamak
-* Performansı artırmak
-* Rota planlamayı optimize etmek
+- PostgreSQL
+- Docker
+- SQL
+- Git / GitHub
 
 ---
 
-# 🔒 Veri Bütünlüğü
+## Veritabanı Kurulumu
 
-Veritabanında veri güvenliği için:
-
-* **Foreign Key** → tablolar arası ilişki
-* **Constraint** → veri doğrulama
-* **ENUM** → sabit değer kontrolü
-* **UNIQUE** → tekrar kayıt engelleme
-
----
-
-# 🚫 Duplicate (Çift Kayıt) Önleme
-
-`collections` tablosunda:
-
-```sql
-idempotency_key UNIQUE
-```
-
-Bu sayede aynı toplama işlemi birden fazla kez kaydedilemez.
-
----
-
-# 🧠 Mimari Yapı
-
-```text
-Konteyner → Telemetry → View (latest state)
-          ↓
-      Rota Planlama
-          ↓
-   route_plans → route_stops
-          ↓
-      Toplama (collections)
-```
-
----
-
-# ⚙️ Kurulum
-
-## Docker ile PostgreSQL başlatma
+### Veritabanı oluştur:
 
 ```bash
-docker run --name atik-postgres \
--e POSTGRES_USER=postgres \
--e POSTGRES_PASSWORD=123456 \
--e POSTGRES_DB=atik_yonetimi \
--p 5432:5432 \
--d postgres:16
+createdb -U postgres atik_yonetimi
 ```
 
----
-
-## Veritabanını yükleme
+### SQL yükle:
 
 ```bash
-docker exec -i atik-postgres psql -U postgres -d atik_yonetimi < database/atik_yonetimi_dump.sql
+psql -U postgres -d atik_yonetimi < database/atik_yonetimi.sql
+```
+
+### Docker:
+
+```bash
+docker exec -i atik-postgres psql -U postgres -d atik_yonetimi < database/atik_yonetimi.sql
 ```
 
 ---
 
-# 🧪 Test Örnekleri
+## Atık Türleri
+
+- CAM
+- PLASTIK
+- KAGIT
+- IKINCI_EL_ESYA
+- METAL
+
+---
+
+## Araçlar (vehicles)
+
+- Toplam: 10 araç  
+- Her kategoride: 2 araç  
+
+Araç bilgileri:
+
+- Plaka  
+- Atık türü  
+- Garaj konumu  
+- Şifre  
+
+Giriş örneği:
 
 ```sql
-SELECT * FROM vehicles;
-SELECT * FROM drivers;
-SELECT * FROM latest_container_state;
+SELECT id, plate
+FROM vehicles
+WHERE plate = '01ABC001'
+AND login_password = 'plastik02pass';
 ```
 
 ---
 
-# 🎯 Tasarım Kararları
+## Konteynerler (containers)
 
-* Normalize edilmiş yapı kullanıldı
-* Telemetry verisi ayrı tutuldu
-* View ile performans optimize edildi
-* Foreign key ile veri bütünlüğü sağlandı
-* Constraint ile hatalı veri engellendi
-* Idempotency ile duplicate önlendi
+- Toplam: 75 konteyner  
+- Her kategoride: 15 konteyner  
+- 15 farklı konum  
 
----
+Her konumda:
 
-# 📎 Veritabanı Dosyası
-
-📁 `database/atik_yonetimi_dump.sql`
-
-Bu dosya ile sistem tamamen yeniden kurulabilir. 
+- 1 CAM  
+- 1 PLASTIK  
+- 1 KAGIT  
+- 1 IKINCI_EL_ESYA  
+- 1 METAL  
 
 ---
 
-# 🚀 Sonuç
+## Telemetry
 
-Bu veritabanı:
+Konteynerlerden gelen anlık veriler tutulur:
 
-✔️ Gerçek dünya modeline uygun
-✔️ Performanslı
-✔️ Güvenilir
-✔️ Backend ile uyumlu
-✔️ Ölçeklenebilir
+- Doluluk
+- Pil seviyesi
+- Zaman bilgisi
 
 ---
+
+## View: latest_container_state
+
+Her konteynerin en güncel durumunu gösterir.
+
+---
+
+## Sürücüler
+
+- Araçlarla ilişkilidir  
+- Foreign key ile bağlıdır  
+
+---
+
+## Rota Sistemi
+
+### route_plans
+
+- Araç bazlı rota
+
+### route_stops
+
+Durumlar:
+
+- PENDING  
+- DONE  
+- SKIPPED  
+
+---
+
+## Toplama İşlemleri (collections)
+
+- Toplanan kg tutulur  
+- GPS bilgisi saklanır  
+- Driver ve araç ilişkili  
+
+---
+
+## Idempotency
+
+Aynı işlemin tekrar kaydedilmesini engeller.
+
+---
+
+## Haftalık Atık Takibi
+
+`weekly_waste_totals` tablosu:
+
+- Haftalık kg tutar  
+- Otomatik güncellenir (trigger)  
+
+Sıfırlama:
+
+```sql
+SELECT reset_weekly_waste_totals();
+```
+
+---
+
+## Şikayet Sistemi
+
+Misafirler şikayet gönderir → `complaints` tablosu
+
+Yönetici:
+
+- Görüntüler  
+- Siler  
+
+---
+
+## Yönetici İşlemleri
+
+- Araç ekleme  
+- Araç silme  
+- Şikayet yönetimi  
+- Haftalık verileri görme  
+
+---
+
+## Foreign Key Yapısı
+
+Tablolar birbirine bağlıdır:
+
+- drivers → vehicles  
+- telemetry → containers  
+- collections → vehicles / drivers / route_stops  
+
+---
+
+## Constraint Kuralları
+
+- Latitude / Longitude sınırları  
+- Negatif kg yasak  
+- DONE → amount zorunlu  
+- SKIPPED → reason zorunlu  
+- Plate UNIQUE  
+
+---
+
+## Index Kullanımı
+
+Performans için:
+
+- telemetry index  
+- route index  
+- collections index  
+
+---
+
+## Sistem Özeti
+
+- 5 atık türü  
+- 10 araç  
+- 75 konteyner  
+- 15 lokasyon  
+- Login sistemi  
+- Şikayet sistemi  
+- Haftalık atık takibi  
+
+---
+
+## Not
+
+Bu proje eğitim amaçlıdır.
+
+Gerçek sistemde:
+
+- Şifreler hashlenmelidir  
+- Yetkilendirme yapılmalıdır  
+- Cron job ile haftalık reset yapılmalıdır  
