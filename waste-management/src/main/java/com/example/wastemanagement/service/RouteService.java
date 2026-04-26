@@ -1,5 +1,7 @@
 package com.example.wastemanagement.service;
 
+import com.example.wastemanagement.entity.Container;
+import com.example.wastemanagement.repository.ContainerRepository;
 import com.example.wastemanagement.config.AppConstants;
 import com.example.wastemanagement.entity.RoutePlan;
 import com.example.wastemanagement.entity.RouteStop;
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+
 @Service
 public class RouteService {
 
@@ -31,15 +35,18 @@ public class RouteService {
     private final RoutePlanRepository routePlanRepository;
     private final RouteStopRepository routeStopRepository;
     private final TelemetryRepository telemetryRepository;
+    private final ContainerRepository containerRepository;
 
     public RouteService(VehicleRepository vehicleRepository,
-                        RoutePlanRepository routePlanRepository,
-                        RouteStopRepository routeStopRepository,
-                        TelemetryRepository telemetryRepository) {
+                    RoutePlanRepository routePlanRepository,
+                    RouteStopRepository routeStopRepository,
+                    TelemetryRepository telemetryRepository,
+                    ContainerRepository containerRepository) {
         this.vehicleRepository = vehicleRepository;
         this.routePlanRepository = routePlanRepository;
         this.routeStopRepository = routeStopRepository;
         this.telemetryRepository = telemetryRepository;
+        this.containerRepository = containerRepository;
     }
 
     public RoutePlan generateRoute(WasteType wasteType, TriggerMode generationMode) {
@@ -55,9 +62,15 @@ public class RouteService {
         }
 
         List<TelemetryRecord> candidates = selectCandidates();
+
         List<TelemetryRecord> filteredByWasteType = candidates.stream()
-                .filter(t -> vehicle.getWasteType() == wasteType)
-                .collect(Collectors.toList());
+            .filter(t -> {
+                Container container = containerRepository.findById(t.getContainerId())
+                    .orElse(null);
+
+                return container != null && container.getWasteType() == vehicle.getWasteType();
+            })
+            .collect(Collectors.toList());
 
         List<TelemetryRecord> ordered = nearestNeighborOrder(vehicle, filteredByWasteType);
 
