@@ -8,6 +8,8 @@ import com.example.wastemanagement.security.TokenService;
 import com.example.wastemanagement.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import com.example.wastemanagement.dto.auth.AdminLoginRequest;
+import com.example.wastemanagement.dto.auth.AdminLoginResponse;
 
 @RestController
 @RequestMapping
@@ -24,6 +26,11 @@ public class AuthController {
     @PostMapping("/auth/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.loginByPlate(request.getPlate());
+    }
+    
+    @PostMapping("/auth/admin-login")
+    public AdminLoginResponse adminLogin(@Valid @RequestBody AdminLoginRequest request) {
+        return authService.adminLogin(request);
     }
 
     @GetMapping("/me")

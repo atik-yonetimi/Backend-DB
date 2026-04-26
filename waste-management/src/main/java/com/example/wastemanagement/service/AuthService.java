@@ -1,10 +1,14 @@
 package com.example.wastemanagement.service;
 
+import com.example.wastemanagement.dto.auth.AdminLoginRequest;
+import com.example.wastemanagement.dto.auth.AdminLoginResponse;
 import com.example.wastemanagement.dto.auth.LoginResponse;
 import com.example.wastemanagement.dto.auth.MeResponse;
+import com.example.wastemanagement.entity.Admin;
 import com.example.wastemanagement.entity.Driver;
 import com.example.wastemanagement.entity.Vehicle;
 import com.example.wastemanagement.exception.NotFoundException;
+import com.example.wastemanagement.repository.AdminRepository;
 import com.example.wastemanagement.repository.DriverRepository;
 import com.example.wastemanagement.repository.VehicleRepository;
 import com.example.wastemanagement.security.TokenService;
@@ -15,13 +19,16 @@ public class AuthService {
 
     private final DriverRepository driverRepository;
     private final VehicleRepository vehicleRepository;
+    private final AdminRepository adminRepository;
     private final TokenService tokenService;
 
     public AuthService(DriverRepository driverRepository,
                        VehicleRepository vehicleRepository,
+                       AdminRepository adminRepository,
                        TokenService tokenService) {
         this.driverRepository = driverRepository;
         this.vehicleRepository = vehicleRepository;
+        this.adminRepository = adminRepository;
         this.tokenService = tokenService;
     }
 
@@ -40,6 +47,21 @@ public class AuthService {
         response.setDriverId(driver.getId());
         response.setVehicleId(vehicle.getId());
         response.setPlate(vehicle.getPlate());
+
+        return response;
+    }
+
+    public AdminLoginResponse adminLogin(AdminLoginRequest request) {
+        Admin admin = adminRepository.findByUsernameAndPassword(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+                .orElseThrow(() -> new NotFoundException("Admin kullanici adi veya sifre hatali"));
+
+        AdminLoginResponse response = new AdminLoginResponse();
+        response.setAdminId(admin.getId());
+        response.setUsername(admin.getUsername());
+        response.setRole("ADMIN");
 
         return response;
     }
