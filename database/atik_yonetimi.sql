@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict R1xWdqLQXJjTz3X3IhxIfSD1Y018dfUcUXqxBe6SppsaIhPAwHA1JJozuJD5aV0
+\restrict VrcDOOfEBEh6gxNRl4Exg7flEnoWCCKqejYOMcRvcDEVOewfz57CAXDoMKRVOhX
 
 -- Dumped from database version 16.13 (Debian 16.13-1.pgdg13+1)
 -- Dumped by pg_dump version 16.13 (Debian 16.13-1.pgdg13+1)
@@ -774,10 +774,10 @@ COPY public.containers (id, waste_type, lat, lng, status, created_at) FROM stdin
 
 COPY public.drivers (id, plate_login, assigned_vehicle_id, created_at) FROM stdin;
 2	01ABC02	2	2026-03-20 16:42:33.916686+00
-1	01ABC01	1	2026-03-20 16:42:33.916686+00
 7	01ABC006	4	2026-04-26 18:44:04.921831+00
 8	01ABC007	8	2026-04-26 18:44:04.921831+00
 11	01ABC010	3	2026-04-26 18:44:04.921831+00
+1	01ABC03	1	2026-03-20 16:42:33.916686+00
 \.
 
 
@@ -925,11 +925,11 @@ COPY public.telemetry (id, container_id, fill_percent, lat, lng, source_timestam
 --
 
 COPY public.vehicles (id, plate, waste_type, garage_lat, garage_lng, created_at, login_password) FROM stdin;
-1	01ABC01	CAM	36.99	35.3	2026-03-20 16:42:27.784072+00	cam01pass
 2	01ABC02	PLASTIK	36.99	35.3	2026-03-20 16:42:27.784072+00	plastik01pass
 4	01ABC006	KAGIT	37.0005	35.3218	2026-04-25 20:00:31.011959+00	kagit02pass
 8	01ABC007	IKINCI_EL_ESYA	37.0006	35.3219	2026-04-25 20:00:31.011959+00	esya01pass
 3	01ABC010	METAL	37.0009	35.3222	2026-04-25 20:00:31.011959+00	metal02pass
+1	01ABC03	CAM	36.99	35.3	2026-03-20 16:42:27.784072+00	cam03pass
 \.
 
 
@@ -1269,5 +1269,5 @@ ALTER TABLE ONLY public.telemetry
 -- PostgreSQL database dump complete
 --
 
-\unrestrict R1xWdqLQXJjTz3X3IhxIfSD1Y018dfUcUXqxBe6SppsaIhPAwHA1JJozuJD5aV0
+\unrestrict VrcDOOfEBEh6gxNRl4Exg7flEnoWCCKqejYOMcRvcDEVOewfz57CAXDoMKRVOhX
 
