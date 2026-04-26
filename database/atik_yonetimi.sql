@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict ABVnQD6ev7jB1yC1eV2gU4fUPjhZrrih8dWz2CBEQ98oSOwiCUAG4QC1WLHPOul
+\restrict Csi1soNWQgky0zJenS2s3OkYKG2NW9ZTFZSCEwI729WCYOxwLOchDXIK4ooi31J
 
 -- Dumped from database version 16.13 (Debian 16.13-1.pgdg13+1)
 -- Dumped by pg_dump version 16.13 (Debian 16.13-1.pgdg13+1)
@@ -770,6 +770,14 @@ COPY public.containers (id, waste_type, lat, lng, status, created_at) FROM stdin
 COPY public.drivers (id, plate_login, assigned_vehicle_id, created_at) FROM stdin;
 2	01ABC02	2	2026-03-20 16:42:33.916686+00
 1	01ABC01	1	2026-03-20 16:42:33.916686+00
+4	01ABC003	11	2026-04-26 18:44:04.921831+00
+5	01ABC001	5	2026-04-26 18:44:04.921831+00
+6	01ABC005	9	2026-04-26 18:44:04.921831+00
+7	01ABC006	4	2026-04-26 18:44:04.921831+00
+8	01ABC007	8	2026-04-26 18:44:04.921831+00
+9	01ABC008	12	2026-04-26 18:44:04.921831+00
+10	01ABC009	10	2026-04-26 18:44:04.921831+00
+11	01ABC010	3	2026-04-26 18:44:04.921831+00
 \.
 
 
@@ -900,7 +908,7 @@ SELECT pg_catalog.setval('public.containers_id_seq', 77, true);
 -- Name: drivers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.drivers_id_seq', 3, true);
+SELECT pg_catalog.setval('public.drivers_id_seq', 11, true);
 
 
 --
@@ -1191,5 +1199,5 @@ ALTER TABLE ONLY public.telemetry
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ABVnQD6ev7jB1yC1eV2gU4fUPjhZrrih8dWz2CBEQ98oSOwiCUAG4QC1WLHPOul
+\unrestrict Csi1soNWQgky0zJenS2s3OkYKG2NW9ZTFZSCEwI729WCYOxwLOchDXIK4ooi31J
 
