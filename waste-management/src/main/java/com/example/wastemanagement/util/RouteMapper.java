@@ -44,21 +44,24 @@ public class RouteMapper {
     }
 
     public StopResponse toStopResponse(RouteStop stop) {
-        Container container = containerRepository.findById(stop.getContainerId())
-                .orElseThrow(() -> new NotFoundException("Container bulunamadi: " + stop.getContainerId()));
+    Container container = containerRepository.findById(stop.getContainerId())
+            .orElseThrow(() -> new NotFoundException("Container bulunamadi: " + stop.getContainerId()));
 
-        ContainerSummaryResponse containerResponse = new ContainerSummaryResponse();
-        containerResponse.setId(container.getId());
-        containerResponse.setWasteType(container.getWasteType().name());
-        containerResponse.setLat(container.getLat());
-        containerResponse.setLng(container.getLng());
+    ContainerSummaryResponse containerResponse = new ContainerSummaryResponse();
+    containerResponse.setId(container.getId());
+    containerResponse.setWasteType(container.getWasteType().name());
+    containerResponse.setLat(container.getLat());
+    containerResponse.setLng(container.getLng());
 
-        StopResponse response = new StopResponse();
-        response.setId(stop.getId());
-        response.setSequenceNo(stop.getSequenceNo());
-        response.setStatus(stop.getStatus().name());
-        response.setContainer(containerResponse);
+    containerRepository.findLatestFillPercentByContainerId(container.getId())
+            .ifPresent(containerResponse::setFillPercent);
 
-        return response;
+    StopResponse response = new StopResponse();
+    response.setId(stop.getId());
+    response.setSequenceNo(stop.getSequenceNo());
+    response.setStatus(stop.getStatus().name());
+    response.setContainer(containerResponse);
+
+    return response;
     }
 }
