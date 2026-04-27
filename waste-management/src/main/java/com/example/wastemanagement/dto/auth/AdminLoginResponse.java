@@ -5,6 +5,7 @@ public class AdminLoginResponse {
     private Long adminId;
     private String username;
     private String role;
+    private String accessToken; // 🚨 EKLENEN KRİTİK KISIM
 
     public Long getAdminId() {
         return adminId;
@@ -28,5 +29,14 @@ public class AdminLoginResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    // 🚨 TOKEN İÇİN GETTER VE SETTER EKLENDİ 🚨
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

@@ -58,10 +58,16 @@ public class AuthService {
                 )
                 .orElseThrow(() -> new NotFoundException("Admin kullanici adi veya sifre hatali"));
 
+        // 🚨 EKSİK OLAN TOKEN ÜRETİMİ BURAYA EKLENDİ 🚨
+        String token = tokenService.generateToken(admin.getId());
+
         AdminLoginResponse response = new AdminLoginResponse();
         response.setAdminId(admin.getId());
         response.setUsername(admin.getUsername());
         response.setRole("ADMIN");
+        
+        // 🚨 ÜRETİLEN TOKEN KUTUYA (RESPONSE) KONULDU 🚨
+        response.setAccessToken(token); 
 
         return response;
     }
