@@ -11,7 +11,10 @@ import com.example.wastemanagement.repository.RouteStopRepository;
 import com.example.wastemanagement.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardService {
@@ -29,8 +32,18 @@ public class DashboardService {
     }
 
     public List<ActiveVehicleResponse> getActiveVehicles() {
-        return routePlanRepository.findByStatus(RouteStatus.ACTIVE)
+        List<RoutePlan> activeRoutes = routePlanRepository.findByStatus(RouteStatus.ACTIVE);
+
+        Map<Long, RoutePlan> latestActiveRouteByVehicle = activeRoutes.stream()
+                .collect(Collectors.toMap(
+                        RoutePlan::getVehicleId,
+                        routePlan -> routePlan,
+                        (r1, r2) -> r1.getCreatedAt().isAfter(r2.getCreatedAt()) ? r1 : r2
+                ));
+
+        return latestActiveRouteByVehicle.values()
                 .stream()
+                .sorted(Comparator.comparing(RoutePlan::getVehicleId))
                 .map(this::toActiveVehicleResponse)
                 .toList();
     }
@@ -40,15 +53,21 @@ public class DashboardService {
                 .orElseThrow(() -> new NotFoundException("Arac bulunamadi"));
 
         ActiveVehicleResponse response = new ActiveVehicleResponse();
+
         response.setVehicleId(vehicle.getId());
         response.setPlate(vehicle.getPlate());
         response.setWasteType(vehicle.getWasteType().name());
+
         response.setRoutePlanId(routePlan.getId());
         response.setRouteStatus(routePlan.getStatus().name());
 
-        response.setTotalStops(routeStopRepository.countByRoutePlanId(routePlan.getId()));
-        response.setPendingStops(routeStopRepository.countByRoutePlanIdAndStatus(routePlan.getId(), StopStatus.PENDING));
-        response.setDoneStops(routeStopRepository.countByRoutePlanIdAndStatus(routePlan.getId(), StopStatus.DONE));
+        int totalStops = routeStopRepository.countByRoutePlanId(routePlan.getId());
+        int pendingStops = routeStopRepository.countByRoutePlanIdAndStatus(routePlan.getId(), StopStatus.PENDING);
+        int doneStops = routeStopRepository.countByRoutePlanIdAndStatus(routePlan.getId(), StopStatus.DONE);
+
+        response.setTotalStops(totalStops);
+        response.setPendingStops(pendingStops);
+        response.setDoneStops(doneStops);
 
         return response;
     }
