@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict VrcDOOfEBEh6gxNRl4Exg7flEnoWCCKqejYOMcRvcDEVOewfz57CAXDoMKRVOhX
+\restrict u70dtzzyPuLhXxPrvs9hjcTqodAhdR7kgyjot0XYp2TCQQrwgw7sOtQYewSFsFl
 
 -- Dumped from database version 16.13 (Debian 16.13-1.pgdg13+1)
 -- Dumped by pg_dump version 16.13 (Debian 16.13-1.pgdg13+1)
@@ -190,6 +190,7 @@ CREATE TABLE public.collections (
     gps_lng double precision,
     idempotency_key character varying(100),
     created_at timestamp with time zone DEFAULT now() NOT NULL,
+    note text,
     CONSTRAINT chk_collections_amount_nonnegative CHECK (((amount_kg IS NULL) OR (amount_kg >= (0)::numeric))),
     CONSTRAINT chk_collections_done_requires_amount CHECK ((((result = 'DONE'::public.collection_result_enum) AND (amount_kg IS NOT NULL) AND (skip_reason IS NULL)) OR ((result = 'SKIPPED'::public.collection_result_enum) AND (skip_reason IS NOT NULL)))),
     CONSTRAINT chk_collections_gps_lat CHECK (((gps_lat IS NULL) OR ((gps_lat >= ('-90'::integer)::double precision) AND (gps_lat <= (90)::double precision)))),
@@ -672,8 +673,8 @@ COPY public.admins (id, username, password, created_at) FROM stdin;
 -- Data for Name: collections; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.collections (id, route_stop_id, driver_id, vehicle_id, result, amount_kg, skip_reason, collected_at, gps_lat, gps_lng, idempotency_key, created_at) FROM stdin;
-1	1	1	1	DONE	12.50	\N	2026-03-20 16:43:49.238268+00	37.0001	35.3213	col-001	2026-03-20 16:43:49.238268+00
+COPY public.collections (id, route_stop_id, driver_id, vehicle_id, result, amount_kg, skip_reason, collected_at, gps_lat, gps_lng, idempotency_key, created_at, note) FROM stdin;
+1	1	1	1	DONE	12.50	\N	2026-03-20 16:43:49.238268+00	37.0001	35.3213	col-001	2026-03-20 16:43:49.238268+00	\N
 \.
 
 
@@ -1269,5 +1270,5 @@ ALTER TABLE ONLY public.telemetry
 -- PostgreSQL database dump complete
 --
 
-\unrestrict VrcDOOfEBEh6gxNRl4Exg7flEnoWCCKqejYOMcRvcDEVOewfz57CAXDoMKRVOhX
+\unrestrict u70dtzzyPuLhXxPrvs9hjcTqodAhdR7kgyjot0XYp2TCQQrwgw7sOtQYewSFsFl
 
