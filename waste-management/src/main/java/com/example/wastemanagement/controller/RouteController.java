@@ -10,6 +10,8 @@ import com.example.wastemanagement.util.RouteMapper;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map; // 🚨 Yeni eklendi
+
 @RestController
 @RequestMapping("/routes")
 public class RouteController {
@@ -40,5 +42,12 @@ public class RouteController {
         }
 
         return routeMapper.toRoutePlanResponse(routePlan);
+    }
+
+    // 🚨 İŞTE FLUTTER'IN ARADIĞI O EKSİK KAPI BURASI 🚨
+    @PatchMapping("/{id}/status")
+    public void updateRouteStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String newStatus = body.get("status");
+        routeService.updateRouteStatus(id, newStatus);
     }
 }

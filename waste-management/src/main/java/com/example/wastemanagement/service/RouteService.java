@@ -152,4 +152,13 @@ public class RouteService {
     private double distance(Double aLat, Double aLng, Double bLat, Double bLng) {
         return Math.sqrt(Math.pow(aLat - bLat, 2) + Math.pow(aLng - bLng, 2));
     }
+    // 🚨 ROTAYI BİTİREN FONKSİYON 🚨
+    public void updateRouteStatus(Long routeId, String statusText) {
+        RoutePlan routePlan = routePlanRepository.findById(routeId)
+                .orElseThrow(() -> new IllegalArgumentException("Rota bulunamadı"));
+        
+        // Gelen "COMPLETED" yazısını veritabanı formatına (Enum) çevirip kaydediyoruz
+        routePlan.setStatus(com.example.wastemanagement.enums.RouteStatus.valueOf(statusText));
+        routePlanRepository.save(routePlan);
+    }
 }
