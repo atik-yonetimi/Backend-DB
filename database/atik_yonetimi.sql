@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict u70dtzzyPuLhXxPrvs9hjcTqodAhdR7kgyjot0XYp2TCQQrwgw7sOtQYewSFsFl
+\restrict dKKkwC30GMT78KCkROoalzJpe7u1obxVC6F8mMPOKRaTgXQJ9HbXqmeZq39wTRJ
 
 -- Dumped from database version 16.13 (Debian 16.13-1.pgdg13+1)
 -- Dumped by pg_dump version 16.13 (Debian 16.13-1.pgdg13+1)
@@ -797,7 +797,7 @@ COPY public.guests (id, name, created_at) FROM stdin;
 --
 
 COPY public.route_plans (id, vehicle_id, waste_type, created_at, status) FROM stdin;
-1	1	CAM	2026-03-20 16:43:39.522996+00	ACTIVE
+1	1	CAM	2026-03-20 16:43:39.522996+00	COMPLETED
 \.
 
 
@@ -1270,5 +1270,5 @@ ALTER TABLE ONLY public.telemetry
 -- PostgreSQL database dump complete
 --
 
-\unrestrict u70dtzzyPuLhXxPrvs9hjcTqodAhdR7kgyjot0XYp2TCQQrwgw7sOtQYewSFsFl
+\unrestrict dKKkwC30GMT78KCkROoalzJpe7u1obxVC6F8mMPOKRaTgXQJ9HbXqmeZq39wTRJ
 
