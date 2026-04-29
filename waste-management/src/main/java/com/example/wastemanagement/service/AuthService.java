@@ -44,8 +44,8 @@ public class AuthService {
         Vehicle vehicle = vehicleRepository.findById(driver.getAssignedVehicleId())
                 .orElseThrow(() -> new NotFoundException("Surucuye atanmis arac bulunamadi"));
 
-        // 🚨 FİLO ÇAKIŞMA KONTROLÜ (Aynı atık türünden başka aktif araç var mı?) 🚨
-        boolean isAnotherVehicleActive = routePlanRepository.existsActiveRouteForWasteType(vehicle.getWasteType());
+        // 🚨 FİLO ÇAKIŞMA KONTROLÜ (GÜNCELLENDİ) 🚨
+        boolean isAnotherVehicleActive = routePlanRepository.existsOtherActiveRouteForWasteType(vehicle.getWasteType(), vehicle.getId());
 
         if (isAnotherVehicleActive) {
             throw new IllegalStateException("Şu anda sahada " + vehicle.getWasteType() + " atıklarını toplayan başka bir araç aktif! Lütfen onun rotasını bitirmesini bekleyin.");
