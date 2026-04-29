@@ -5,6 +5,8 @@ import com.example.wastemanagement.entity.Driver;
 import com.example.wastemanagement.entity.RoutePlan;
 import com.example.wastemanagement.entity.RouteStop;
 import com.example.wastemanagement.entity.TelemetryRecord;
+import com.example.wastemanagement.entity.SkippedAlert;
+import com.example.wastemanagement.entity.Vehicle;
 import com.example.wastemanagement.enums.RouteStatus;
 import com.example.wastemanagement.enums.StopStatus;
 import com.example.wastemanagement.exception.NotFoundException;
@@ -12,6 +14,8 @@ import com.example.wastemanagement.repository.CollectionRepository;
 import com.example.wastemanagement.repository.RoutePlanRepository;
 import com.example.wastemanagement.repository.RouteStopRepository;
 import com.example.wastemanagement.repository.TelemetryRepository;
+import com.example.wastemanagement.repository.SkippedAlertRepository;
+import com.example.wastemanagement.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +30,23 @@ public class StopService {
     private final RoutePlanRepository routePlanRepository;
     private final CollectionRepository collectionRepository;
     private final TelemetryRepository telemetryRepository;
+    
+    // 🚨 ATLANAN KONTEYNER BİLDİRİMLERİ İÇİN YENİ EKLENENLER 🚨
+    private final SkippedAlertRepository skippedAlertRepository;
+    private final VehicleRepository vehicleRepository;
 
     public StopService(RouteStopRepository routeStopRepository,
                        RoutePlanRepository routePlanRepository,
                        CollectionRepository collectionRepository,
-                       TelemetryRepository telemetryRepository) { 
+                       TelemetryRepository telemetryRepository,
+                       SkippedAlertRepository skippedAlertRepository,
+                       VehicleRepository vehicleRepository) { 
         this.routeStopRepository = routeStopRepository;
         this.routePlanRepository = routePlanRepository;
         this.collectionRepository = collectionRepository;
         this.telemetryRepository = telemetryRepository;
+        this.skippedAlertRepository = skippedAlertRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     @Transactional
@@ -81,19 +93,38 @@ public class StopService {
             TelemetryRecord resetRecord = new TelemetryRecord(
                     null, // id
                     stop.getContainerId(), // containerId
-                    BigDecimal.ZERO, // 🚨 İÇİ TAMAMEN BOŞALTILDI (%0.0)
+                    BigDecimal.ZERO, // İÇİ TAMAMEN BOŞALTILDI (%0.0)
                     lat, // lat
                     lng, // lng
                     OffsetDateTime.now(), // sourceTimestamp
-                    OffsetDateTime.now()  // 🚨 EKLENEN 7. PARAMETRE (ingestedAt)
+                    OffsetDateTime.now()  // ingestedAt
             );
 
             telemetryRepository.save(resetRecord);
             System.out.println("♻️ Konteyner #" + stop.getContainerId() + " boşaltıldı ve %0.0 olarak güncellendi.");
         }
 
+        // 🚨 ATLANAN KONTEYNER VE BİLDİRİM MANTIĞI 🚨
         if (request.getStatus() == StopStatus.SKIPPED) {
             stop.setStatus(StopStatus.SKIPPED);
+
+            // Şoförün atama yapıldığı aracı buluyoruz ki plakasını loglayabilelim
+            Vehicle vehicle = vehicleRepository.findById(currentDriver.getAssignedVehicleId())
+                    .orElseThrow(() -> new IllegalStateException("Araç bulunamadı"));
+
+            // Yeni bildirimi oluşturup veritabanına kaydediyoruz
+            SkippedAlert alert = new SkippedAlert(
+                    stop.getContainerId(),
+                    currentDriver.getId(),
+                    vehicle.getPlate(),
+                    request.getReason() != null && !request.getReason().trim().isEmpty() 
+                            ? request.getReason() 
+                            : "Sebep belirtilmedi",
+                    OffsetDateTime.now()
+            );
+
+            skippedAlertRepository.save(alert);
+            System.out.println("🚨 Atlanan Konteyner Kaydedildi! Sebep: " + alert.getReason());
         }
 
         return routeStopRepository.save(stop);

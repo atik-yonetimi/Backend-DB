@@ -7,6 +7,7 @@ public class StopStatusUpdateRequest {
 
     @NotNull
     private StopStatus status;
+    private String reason; // 🚨 BUNU EKLE
 
     public StopStatusUpdateRequest() {
     }
@@ -17,5 +18,13 @@ public class StopStatusUpdateRequest {
 
     public void setStatus(StopStatus status) {
         this.status = status;
+    }
+    
+    // Getter ve Setter'ını da eklemeyi unutma:
+    public String getReason() { return reason; 
+    }
+    
+    
+    public void setReason(String reason) { this.reason = reason; 
     }
 }
