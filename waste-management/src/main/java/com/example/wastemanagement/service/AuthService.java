@@ -1,5 +1,7 @@
 package com.example.wastemanagement.service;
 
+import org.springframework.stereotype.Service;
+
 import com.example.wastemanagement.dto.auth.AdminLoginRequest;
 import com.example.wastemanagement.dto.auth.AdminLoginResponse;
 import com.example.wastemanagement.dto.auth.LoginResponse;
@@ -9,10 +11,10 @@ import com.example.wastemanagement.entity.Driver;
 import com.example.wastemanagement.entity.Vehicle;
 import com.example.wastemanagement.exception.NotFoundException;
 import com.example.wastemanagement.repository.AdminRepository;
-import com.example.wastemanagement.repository.DriverRepository;
+import com.example.wastemanagement.repository.DriverRepository; // 🚨 YENİ EKLENDİ
+import com.example.wastemanagement.repository.RoutePlanRepository;
 import com.example.wastemanagement.repository.VehicleRepository;
 import com.example.wastemanagement.security.TokenService;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -20,15 +22,18 @@ public class AuthService {
     private final DriverRepository driverRepository;
     private final VehicleRepository vehicleRepository;
     private final AdminRepository adminRepository;
+    private final RoutePlanRepository routePlanRepository; // 🚨 YENİ EKLENDİ
     private final TokenService tokenService;
 
     public AuthService(DriverRepository driverRepository,
-                       VehicleRepository vehicleRepository,
-                       AdminRepository adminRepository,
-                       TokenService tokenService) {
+            VehicleRepository vehicleRepository,
+            AdminRepository adminRepository,
+            RoutePlanRepository routePlanRepository, // 🚨 YENİ EKLENDİ
+            TokenService tokenService) {
         this.driverRepository = driverRepository;
         this.vehicleRepository = vehicleRepository;
         this.adminRepository = adminRepository;
+        this.routePlanRepository = routePlanRepository; // 🚨 YENİ EKLENDİ
         this.tokenService = tokenService;
     }
 
@@ -38,6 +43,13 @@ public class AuthService {
 
         Vehicle vehicle = vehicleRepository.findById(driver.getAssignedVehicleId())
                 .orElseThrow(() -> new NotFoundException("Surucuye atanmis arac bulunamadi"));
+
+        // 🚨 FİLO ÇAKIŞMA KONTROLÜ (Aynı atık türünden başka aktif araç var mı?) 🚨
+        boolean isAnotherVehicleActive = routePlanRepository.existsActiveRouteForWasteType(vehicle.getWasteType());
+
+        if (isAnotherVehicleActive) {
+            throw new IllegalStateException("Şu anda sahada " + vehicle.getWasteType() + " atıklarını toplayan başka bir araç aktif! Lütfen onun rotasını bitirmesini bekleyin.");
+        }
 
         String token = tokenService.generateToken(driver.getId());
 
@@ -53,21 +65,21 @@ public class AuthService {
 
     public AdminLoginResponse adminLogin(AdminLoginRequest request) {
         Admin admin = adminRepository.findByUsernameAndPassword(
-                        request.getUsername(),
-                        request.getPassword()
-                )
+                request.getUsername(),
+                request.getPassword()
+        )
                 .orElseThrow(() -> new NotFoundException("Admin kullanici adi veya sifre hatali"));
 
-        // 🚨 EKSİK OLAN TOKEN ÜRETİMİ BURAYA EKLENDİ 🚨
+        // EKSİK OLAN TOKEN ÜRETİMİ BURAYA EKLENDİ
         String token = tokenService.generateToken(admin.getId());
 
         AdminLoginResponse response = new AdminLoginResponse();
         response.setAdminId(admin.getId());
         response.setUsername(admin.getUsername());
         response.setRole("ADMIN");
-        
-        // 🚨 ÜRETİLEN TOKEN KUTUYA (RESPONSE) KONULDU 🚨
-        response.setAccessToken(token); 
+
+        // ÜRETİLEN TOKEN KUTUYA (RESPONSE) KONULDU
+        response.setAccessToken(token);
 
         return response;
     }
