@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict dKKkwC30GMT78KCkROoalzJpe7u1obxVC6F8mMPOKRaTgXQJ9HbXqmeZq39wTRJ
+\restrict ERrNygsmASyYkn4UR3RV1KaD3O1j8nGZgRAmQIz4ogfKSxnQBQfe1y1oPuJNBCP
 
 -- Dumped from database version 16.13 (Debian 16.13-1.pgdg13+1)
 -- Dumped by pg_dump version 16.13 (Debian 16.13-1.pgdg13+1)
@@ -485,6 +485,43 @@ ALTER SEQUENCE public.route_stops_id_seq OWNED BY public.route_stops.id;
 
 
 --
+-- Name: skipped_alerts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.skipped_alerts (
+    id bigint NOT NULL,
+    container_id bigint NOT NULL,
+    driver_id bigint NOT NULL,
+    vehicle_plate character varying(255),
+    reason text,
+    created_at timestamp with time zone
+);
+
+
+ALTER TABLE public.skipped_alerts OWNER TO postgres;
+
+--
+-- Name: skipped_alerts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.skipped_alerts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.skipped_alerts_id_seq OWNER TO postgres;
+
+--
+-- Name: skipped_alerts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.skipped_alerts_id_seq OWNED BY public.skipped_alerts.id;
+
+
+--
 -- Name: telemetry_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -636,6 +673,13 @@ ALTER TABLE ONLY public.route_plans ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 ALTER TABLE ONLY public.route_stops ALTER COLUMN id SET DEFAULT nextval('public.route_stops_id_seq'::regclass);
+
+
+--
+-- Name: skipped_alerts id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.skipped_alerts ALTER COLUMN id SET DEFAULT nextval('public.skipped_alerts_id_seq'::regclass);
 
 
 --
@@ -807,6 +851,14 @@ COPY public.route_plans (id, vehicle_id, waste_type, created_at, status) FROM st
 
 COPY public.route_stops (id, route_plan_id, container_id, sequence_no, status, created_at) FROM stdin;
 1	1	1	1	PENDING	2026-03-20 16:43:44.274652+00
+\.
+
+
+--
+-- Data for Name: skipped_alerts; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.skipped_alerts (id, container_id, driver_id, vehicle_plate, reason, created_at) FROM stdin;
 \.
 
 
@@ -1004,6 +1056,13 @@ SELECT pg_catalog.setval('public.route_stops_id_seq', 1, true);
 
 
 --
+-- Name: skipped_alerts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.skipped_alerts_id_seq', 1, false);
+
+
+--
 -- Name: telemetry_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1110,6 +1169,14 @@ ALTER TABLE ONLY public.route_plans
 
 ALTER TABLE ONLY public.route_stops
     ADD CONSTRAINT route_stops_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: skipped_alerts skipped_alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.skipped_alerts
+    ADD CONSTRAINT skipped_alerts_pkey PRIMARY KEY (id);
 
 
 --
@@ -1270,5 +1337,5 @@ ALTER TABLE ONLY public.telemetry
 -- PostgreSQL database dump complete
 --
 
-\unrestrict dKKkwC30GMT78KCkROoalzJpe7u1obxVC6F8mMPOKRaTgXQJ9HbXqmeZq39wTRJ
+\unrestrict ERrNygsmASyYkn4UR3RV1KaD3O1j8nGZgRAmQIz4ogfKSxnQBQfe1y1oPuJNBCP
 
