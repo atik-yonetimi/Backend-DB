@@ -25,9 +25,9 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return authService.loginByPlate(request.getPlate());
+        return authService.loginByPlate(request.getPlate(), request.getPassword());
     }
-    
+
     @PostMapping("/auth/admin-login")
     public AdminLoginResponse adminLogin(@Valid @RequestBody AdminLoginRequest request) {
         return authService.adminLogin(request);

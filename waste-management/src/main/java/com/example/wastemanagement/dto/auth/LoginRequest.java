@@ -4,17 +4,27 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
 
-    @NotBlank
+    @NotBlank(message = "Plaka boş olamaz")
     private String plate;
 
-    public LoginRequest() {
-    }
+    // 🚨 YENİ EKLENEN: Backend artık Flutter'dan gelen şifreyi de karşılayabilecek
+    @NotBlank(message = "Şifre boş olamaz")
+    private String password;
 
+    // --- GETTER VE SETTER'LAR ---
     public String getPlate() {
         return plate;
     }
 
     public void setPlate(String plate) {
         this.plate = plate;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

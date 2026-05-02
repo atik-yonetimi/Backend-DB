@@ -1,11 +1,16 @@
 package com.example.wastemanagement.controller;
 
-import java.time.OffsetDateTime; // 🚨 YENİ KLASÖR YOLU
+import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,13 +34,33 @@ public class AdminVehicleController {
         this.vehicleRepository = vehicleRepository;
         this.driverRepository = driverRepository;
     }
-    // 🚨 YENİ EKLENEN: Tüm Araçları Getiren Endpoint 🚨
 
+    // 🚨 1. DÜZELTME: Araçları Listelerken Sürücü ID'lerini de bulup ekliyoruz 🚨
     @GetMapping
-    public ResponseEntity<List<Vehicle>> getAllVehicles() {
-        // Veritabanındaki tüm araçları bul ve Flutter'a liste olarak gönder
+    public ResponseEntity<List<Map<String, Object>>> getAllVehicles() {
         List<Vehicle> vehicles = vehicleRepository.findAll();
-        return ResponseEntity.ok(vehicles);
+        List<Driver> drivers = driverRepository.findAll();
+
+        List<Map<String, Object>> responseList = vehicles.stream().map(vehicle -> {
+            // Bu araca atanmış sürücüyü bul
+            Driver matchingDriver = drivers.stream()
+                    .filter(d -> d.getAssignedVehicleId().equals(vehicle.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            // Araç bilgileriyle birlikte Sürücü ID'sini de harmanlayıp Flutter'a yolla
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", vehicle.getId());
+            map.put("plate", vehicle.getPlate());
+            map.put("wasteType", vehicle.getWasteType().name());
+            map.put("garageLat", vehicle.getGarageLat());
+            map.put("garageLng", vehicle.getGarageLng());
+            map.put("driverId", matchingDriver != null ? matchingDriver.getId() : 0);
+
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
     }
 
     @PostMapping
@@ -61,5 +86,29 @@ public class AdminVehicleController {
         driverRepository.save(newDriver);
 
         return ResponseEntity.ok("Araç ve Sürücü başarıyla sisteme eklendi!");
+    }
+
+    // 🚨 2. DÜZELTME: Eksik olan Silme (DELETE) Kapısını Ekliyoruz 🚨
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteVehicle(@PathVariable Long id) {
+        try {
+            // Önce bu araca bağlı olan sürücüyü bulup silmemiz lazım (Foreign Key constraint yüzünden)
+            Driver driver = driverRepository.findAll().stream()
+                    .filter(d -> d.getAssignedVehicleId().equals(id))
+                    .findFirst()
+                    .orElse(null);
+
+            if (driver != null) {
+                driverRepository.delete(driver);
+            }
+
+            // Sürücü silindikten sonra aracı güvenle silebiliriz
+            vehicleRepository.deleteById(id);
+
+            return ResponseEntity.ok("Araç başarıyla silindi!");
+        } catch (Exception e) {
+            // Eğer geçmişte çöp toplamış veya rotaya çıkmış bir araçsa veritabanı silmeye izin vermeyebilir
+            return ResponseEntity.badRequest().body("Bu araç silinemez! Çünkü üzerinde aktif bir rota veya geçmiş çöp toplama kaydı bulunuyor.");
+        }
     }
 }
