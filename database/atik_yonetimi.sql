@@ -1,4 +1,3 @@
---
 -- PostgreSQL database dump
 --
 
@@ -116,7 +115,7 @@ BEGIN
     IF NEW.result = 'DONE' AND NEW.amount_kg IS NOT NULL THEN
 
         SELECT waste_type
-        INTO v_waste_type
+        IN INTO v_waste_type
         FROM vehicles
         WHERE id = NEW.vehicle_id;
 
@@ -718,7 +717,6 @@ COPY public.admins (id, username, password, created_at) FROM stdin;
 --
 
 COPY public.collections (id, route_stop_id, driver_id, vehicle_id, result, amount_kg, skip_reason, collected_at, gps_lat, gps_lng, idempotency_key, created_at, note) FROM stdin;
-1	1	1	1	DONE	12.50	\N	2026-03-20 16:43:49.238268+00	37.0001	35.3213	col-001	2026-03-20 16:43:49.238268+00	\N
 \.
 
 
@@ -841,7 +839,6 @@ COPY public.guests (id, name, created_at) FROM stdin;
 --
 
 COPY public.route_plans (id, vehicle_id, waste_type, created_at, status) FROM stdin;
-1	1	CAM	2026-03-20 16:43:39.522996+00	COMPLETED
 \.
 
 
@@ -850,7 +847,6 @@ COPY public.route_plans (id, vehicle_id, waste_type, created_at, status) FROM st
 --
 
 COPY public.route_stops (id, route_plan_id, container_id, sequence_no, status, created_at) FROM stdin;
-1	1	1	1	PENDING	2026-03-20 16:43:44.274652+00
 \.
 
 
@@ -1010,7 +1006,7 @@ SELECT pg_catalog.setval('public.admins_id_seq', 2, true);
 -- Name: collections_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.collections_id_seq', 2, true);
+SELECT pg_catalog.setval('public.collections_id_seq', 1, false);
 
 
 --
@@ -1045,14 +1041,14 @@ SELECT pg_catalog.setval('public.guests_id_seq', 2, true);
 -- Name: route_plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.route_plans_id_seq', 1, true);
+SELECT pg_catalog.setval('public.route_plans_id_seq', 1, false);
 
 
 --
 -- Name: route_stops_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.route_stops_id_seq', 1, true);
+SELECT pg_catalog.setval('public.route_stops_id_seq', 1, false);
 
 
 --
@@ -1338,4 +1334,3 @@ ALTER TABLE ONLY public.telemetry
 --
 
 \unrestrict ERrNygsmASyYkn4UR3RV1KaD3O1j8nGZgRAmQIz4ogfKSxnQBQfe1y1oPuJNBCP
-
