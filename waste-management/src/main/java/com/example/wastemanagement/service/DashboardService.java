@@ -45,6 +45,8 @@ public class DashboardService {
                 .stream()
                 .sorted(Comparator.comparing(RoutePlan::getVehicleId))
                 .map(this::toActiveVehicleResponse)
+                // 🚨 İŞTE SİHİRLİ DOKUNUŞ BURADA: Toplam durağı 0 olan hayalet rotaları listeden gizle! 🚨
+                .filter(response -> response.getTotalStops() > 0)
                 .toList();
     }
 
